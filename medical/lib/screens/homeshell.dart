@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:medical/screens/FAQ.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -29,10 +30,11 @@ class _HomeShellState extends State<HomeShell> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
+          builder:
+              (ctx) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
         ),
         actions: const [
           Padding(
@@ -40,7 +42,6 @@ class _HomeShellState extends State<HomeShell> {
             child: CircleAvatar(
               radius: 18,
               child: Icon(Icons.account_circle_outlined, size: 30),
-              
             ),
           ),
         ],
@@ -51,7 +52,10 @@ class _HomeShellState extends State<HomeShell> {
         onDestinationSelected: _onNavTap,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Chat',
+          ),
           NavigationDestination(icon: Icon(Icons.place_outlined), label: 'Map'),
           NavigationDestination(icon: Icon(Icons.call_outlined), label: 'Help'),
         ],
@@ -76,8 +80,10 @@ class _MainDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: const Text('Luna Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: const Text(
+              'Luna Menu',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.home),
@@ -88,6 +94,17 @@ class _MainDrawer extends StatelessWidget {
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.question_answer_outlined),
+            title: const Text('FAQ'),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FAQPage()),
+              );
+            },
           ),
         ],
       ),
@@ -166,26 +183,31 @@ class _LocationBarState extends State<LocationBar> {
       );
 
       // Try to get a full street address
-      final placemarks =
-          await placemarkFromCoordinates(pos.latitude, pos.longitude);
+      final placemarks = await placemarkFromCoordinates(
+        pos.latitude,
+        pos.longitude,
+      );
 
       String? address;
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
         address = [
-          if (p.street?.isNotEmpty ?? false) p.street,                    // e.g. "123 MG Road"
-          if (p.subLocality?.isNotEmpty ?? false) p.subLocality,          // e.g. "Koramangala"
-          if (p.locality?.isNotEmpty ?? false) p.locality,                // e.g. "Bengaluru"
-          if (p.administrativeArea?.isNotEmpty ?? false) p.administrativeArea, // e.g. "Karnataka"
-          if (p.postalCode?.isNotEmpty ?? false) p.postalCode,            // e.g. "560034"
+          if (p.street?.isNotEmpty ?? false) p.street, // e.g. "123 MG Road"
+          if (p.subLocality?.isNotEmpty ?? false)
+            p.subLocality, // e.g. "Koramangala"
+          if (p.locality?.isNotEmpty ?? false) p.locality, // e.g. "Bengaluru"
+          if (p.administrativeArea?.isNotEmpty ?? false)
+            p.administrativeArea, // e.g. "Karnataka"
+          if (p.postalCode?.isNotEmpty ?? false) p.postalCode, // e.g. "560034"
         ].where((s) => s != null && s!.trim().isNotEmpty).join(', ');
       }
 
       setState(() {
-        _text = address?.isNotEmpty == true
-            ? address!
-            : 'Lat: ${pos.latitude.toStringAsFixed(6)}, '
-              'Lon: ${pos.longitude.toStringAsFixed(6)}';
+        _text =
+            address?.isNotEmpty == true
+                ? address!
+                : 'Lat: ${pos.latitude.toStringAsFixed(6)}, '
+                    'Lon: ${pos.longitude.toStringAsFixed(6)}';
       });
     } catch (_) {
       setState(() => _text = 'Location unavailable');
@@ -194,7 +216,7 @@ class _LocationBarState extends State<LocationBar> {
     }
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 48,
@@ -207,13 +229,14 @@ class _LocationBarState extends State<LocationBar> {
         children: [
           IconButton(
             onPressed: _busy ? null : _refreshLocation,
-            icon: _busy
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
+            icon:
+                _busy
+                    ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Icon(Icons.refresh),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -234,14 +257,14 @@ class _LocationBarState extends State<LocationBar> {
     );
   }
 }
+
 /// ─────────────────────────
 /// Page stubs for the other tabs
 /// ─────────────────────────
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
   @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Chat page'));
+  Widget build(BuildContext context) => const Center(child: Text('Chat page'));
 }
 
 class MapPage extends StatelessWidget {
