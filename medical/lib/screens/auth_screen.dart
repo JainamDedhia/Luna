@@ -4,8 +4,9 @@ import '../services/auth_service.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_input_field.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'home_screen.dart'; // Import your HomeScreen
+
 // Import the SignUpScreen
+import 'package:medical/screens/homeshell.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -33,8 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              userName: _authService.getUserDisplayName(),
+            builder: (context) => HomeShell(
             ),
           ),
         );
@@ -49,8 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
         // Sign in successful, navigate to home
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              userName: _authService.getUserDisplayName(),
+            builder: (context) => HomeShell(
             ),
           ),
         );
