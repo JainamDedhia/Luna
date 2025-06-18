@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medical/screens/FAQ.dart';
+import 'package:medical/screens/auth_screen.dart';
+import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';
+import '../services/auth_service.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -16,11 +19,26 @@ class _HomeShellState extends State<HomeShell> {
 
   static final _pages = <Widget>[
     const MainPage(),
-    const ChatPage(),
+    ChatScreen(),
     const MapPage(),
     const HelpPage(),
   ];
-
+  void handleSignOut(BuildContext context) async {
+    try {
+      final authService = AuthService();
+      await authService.signOut();
+      
+      // Navigate back to auth screen
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign out failed: $e')),
+      );
+    }
+  }
   void _onNavTap(int newIdx) => setState(() => _index = newIdx);
 
   @override
@@ -69,6 +87,8 @@ class _MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final parentState = context.findAncestorStateOfType<_HomeShellState>();
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -112,6 +132,16 @@ class _MainDrawer extends StatelessWidget {
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             onTap: () => Navigator.pop(context),
+          ),
+
+          // ✅ Sign Out ListTile
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Sign Out'),
+            onTap: () {
+              Navigator.pop(context);
+              parentState?.handleSignOut(context);
+            },
           ),
         ],
       ),
