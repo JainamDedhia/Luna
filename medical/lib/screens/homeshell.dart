@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medical/screens/FAQ.dart';
+import 'package:medical/screens/educational_lessons_app.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -30,11 +31,10 @@ class _HomeShellState extends State<HomeShell> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: Builder(
-          builder:
-              (ctx) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
         ),
         actions: const [
           Padding(
@@ -52,10 +52,7 @@ class _HomeShellState extends State<HomeShell> {
         onDestinationSelected: _onNavTap,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: 'Chat',
-          ),
+          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
           NavigationDestination(icon: Icon(Icons.place_outlined), label: 'Map'),
           NavigationDestination(icon: Icon(Icons.call_outlined), label: 'Help'),
         ],
@@ -65,7 +62,7 @@ class _HomeShellState extends State<HomeShell> {
 }
 
 /// ─────────────────────────
-/// Drawer (placeholder)
+/// Drawer with both screens
 /// ─────────────────────────
 class _MainDrawer extends StatelessWidget {
   const _MainDrawer();
@@ -91,20 +88,30 @@ class _MainDrawer extends StatelessWidget {
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () => Navigator.pop(context),
+            leading: const Icon(Icons.school),
+            title: const Text('Educational Lessons'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const EducationalLessonsPage()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.question_answer_outlined),
             title: const Text('FAQ'),
             onTap: () {
-              Navigator.pop(context); // Close drawer
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const FAQPage()),
               );
             },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -132,7 +139,7 @@ class MainPage extends StatelessWidget {
               'Welcome to Luna!',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
             ),
-            // …other home‑page widgets here
+            // Add more homepage widgets here if needed
           ],
         ),
       ),
@@ -140,8 +147,7 @@ class MainPage extends StatelessWidget {
   }
 }
 
-/// Text‑field‑looking widget that shows a city/state and lets the
-/// user manually refresh it with the refresh icon.
+/// Location Bar Widget
 class LocationBar extends StatefulWidget {
   const LocationBar({super.key});
 
@@ -162,13 +168,11 @@ class _LocationBarState extends State<LocationBar> {
   Future<void> _refreshLocation() async {
     setState(() => _busy = true);
 
-    // 1️⃣  Permissions
     LocationPermission perm = await Geolocator.checkPermission();
     if (perm == LocationPermission.denied) {
       perm = await Geolocator.requestPermission();
     }
-    if (perm == LocationPermission.denied ||
-        perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
       setState(() {
         _text = 'Location permission denied';
         _busy = false;
@@ -176,38 +180,29 @@ class _LocationBarState extends State<LocationBar> {
       return;
     }
 
-    // 2️⃣  Get highly‑accurate position + reverse‑geocode
     try {
       final pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
 
-      // Try to get a full street address
-      final placemarks = await placemarkFromCoordinates(
-        pos.latitude,
-        pos.longitude,
-      );
+      final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
 
       String? address;
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
         address = [
-          if (p.street?.isNotEmpty ?? false) p.street, // e.g. "123 MG Road"
-          if (p.subLocality?.isNotEmpty ?? false)
-            p.subLocality, // e.g. "Koramangala"
-          if (p.locality?.isNotEmpty ?? false) p.locality, // e.g. "Bengaluru"
-          if (p.administrativeArea?.isNotEmpty ?? false)
-            p.administrativeArea, // e.g. "Karnataka"
-          if (p.postalCode?.isNotEmpty ?? false) p.postalCode, // e.g. "560034"
+          if (p.street?.isNotEmpty ?? false) p.street,
+          if (p.subLocality?.isNotEmpty ?? false) p.subLocality,
+          if (p.locality?.isNotEmpty ?? false) p.locality,
+          if (p.administrativeArea?.isNotEmpty ?? false) p.administrativeArea,
+          if (p.postalCode?.isNotEmpty ?? false) p.postalCode,
         ].where((s) => s != null && s!.trim().isNotEmpty).join(', ');
       }
 
       setState(() {
-        _text =
-            address?.isNotEmpty == true
-                ? address!
-                : 'Lat: ${pos.latitude.toStringAsFixed(6)}, '
-                    'Lon: ${pos.longitude.toStringAsFixed(6)}';
+        _text = address?.isNotEmpty == true
+            ? address!
+            : 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lon: ${pos.longitude.toStringAsFixed(6)}';
       });
     } catch (_) {
       setState(() => _text = 'Location unavailable');
@@ -229,14 +224,13 @@ class _LocationBarState extends State<LocationBar> {
         children: [
           IconButton(
             onPressed: _busy ? null : _refreshLocation,
-            icon:
-                _busy
-                    ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Icon(Icons.refresh),
+            icon: _busy
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -270,13 +264,11 @@ class ChatPage extends StatelessWidget {
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
   @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Map / Nearby'));
+  Widget build(BuildContext context) => const Center(child: Text('Map / Nearby'));
 }
 
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
   @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Help & Support'));
+  Widget build(BuildContext context) => const Center(child: Text('Help & Support'));
 }
