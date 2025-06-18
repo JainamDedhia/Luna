@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../services/chat_service.dart';
 import '../widgets/message_bubble.dart';
-import '../utils/theme.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
-
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -23,54 +21,58 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   
-void _listen() async {
-  var status = await Permission.microphone.status;
+  // Color scheme from EducationalLessonsPage
+  final Color _primaryColor = const Color(0xFFD9F99D); // Yellow-green accent
+  final Color _backgroundColor = Colors.black;
+  final Color _cardColor = const Color(0xFF2C2C2C);
+  final Color _textColor = const Color(0xFFD9F99D);
+  final Color _secondaryTextColor = const Color(0xFFD9F99D).withOpacity(0.7);
 
-  if (!status.isGranted) {
-    status = await Permission.microphone.request();
+  void _listen() async {
+    var status = await Permission.microphone.status;
+
     if (!status.isGranted) {
-      // Show error or toast
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Microphone permission is required.')),
-      );
-      return;
+      status = await Permission.microphone.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(content: Text('Microphone permission is required.', style: TextStyle(color: _textColor))
+));
+        return;
+      }
     }
-  }
 
-  if (!_isListening) {
-    bool available = await _speech.initialize(
-      onStatus: (val) {
-        if (val == 'done' || val == 'notListening') {
-          setState(() => _isListening = false);
-        }
-      },
-      onError: (val) {
-        setState(() => _isListening = false);
-      },
-    );
-
-    if (available) {
-      setState(() => _isListening = true);
-      _speech.listen(
-        onResult: (val) {
-          setState(() {
-            _textController.text = val.recognizedWords;
-          });
-
-          if (val.hasConfidenceRating && val.confidence > 0.5 && val.finalResult) {
-            _sendMessage(val.recognizedWords);
-            _speech.stop();
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) {
+          if (val == 'done' || val == 'notListening') {
+            setState(() => _isListening = false);
           }
         },
+        onError: (val) {
+          setState(() => _isListening = false);
+        },
       );
+
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) {
+            setState(() {
+              _textController.text = val.recognizedWords;
+            });
+
+            if (val.hasConfidenceRating && val.confidence > 0.5 && val.finalResult) {
+              _sendMessage(val.recognizedWords);
+              _speech.stop();
+            }
+          },
+        );
+      }
+    } else {
+      _speech.stop();
+      setState(() => _isListening = false);
     }
-  } else {
-    _speech.stop();
-    setState(() => _isListening = false);
   }
-}
-
-
 
   // Quick action buttons
   final List<Map<String, dynamic>> _quickActions = [
@@ -88,10 +90,6 @@ void _listen() async {
       vsync: this,
     )..repeat();
     
-    // Add welcome message after first frame render
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-      //_addWelcomeMessage();
-    //});
     _speech = stt.SpeechToText();
   }
 
@@ -106,26 +104,18 @@ void _listen() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.backgroundGradient,
+      backgroundColor: _backgroundColor,
+      body: Column(
+        children: [
+          _buildAppBar(),
+          Expanded(
+            child: _messages.isEmpty 
+                ? _buildEmptyState()
+                : _buildMessagesList(),
           ),
-        ),
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: _messages.isEmpty 
-                  ? _buildEmptyState()
-                  : _buildMessagesList(),
-            ),
-            if (_isLoading) _buildTypingIndicator(),
-            _buildInputArea(),
-          ],
-        ),
+          if (_isLoading) _buildTypingIndicator(),
+          _buildInputArea(),
+        ],
       ),
     );
   }
@@ -138,9 +128,9 @@ void _listen() async {
         right: 16,
         bottom: 16,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.primaryGreen,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
         ),
@@ -150,24 +140,24 @@ void _listen() async {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: _primaryColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.local_hospital,
-              color: Colors.white,
+              color: _primaryColor,
               size: 24,
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '🌿 Ayurvedic First Aid',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _primaryColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -175,7 +165,7 @@ void _listen() async {
                 Text(
                   'Natural remedies for wellness',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: _secondaryTextColor,
                     fontSize: 12,
                   ),
                 ),
@@ -184,7 +174,7 @@ void _listen() async {
           ),
           IconButton(
             onPressed: _showInfoDialog,
-            icon: const Icon(Icons.info_outline, color: Colors.white),
+            icon: Icon(Icons.info_outline, color: _primaryColor),
           ),
         ],
       ),
@@ -199,30 +189,30 @@ void _listen() async {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.lightGreen,
+              color: _cardColor,
               borderRadius: BorderRadius.circular(100),
             ),
-            child: const Icon(
-              Icons.healing,
-              size: 64,
-              color: AppColors.primaryGreen,
+            child: Image.asset(
+              'assets/Luna.png',
+              height: 64,
+              width: 64,
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Welcome to Ayurvedic First Aid',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: _primaryColor,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Get natural remedies for common health issues',
             style: TextStyle(
               fontSize: 16,
-              color: AppColors.textSecondary,
+              color: _secondaryTextColor,
             ),
             textAlign: TextAlign.center,
           ),
@@ -243,12 +233,12 @@ void _listen() async {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: _cardColor,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.lightGreen),
+              border: Border.all(color: _primaryColor.withOpacity(0.3)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -258,13 +248,13 @@ void _listen() async {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(action['icon'], 
-                     color: AppColors.primaryGreen, 
+                     color: _primaryColor, 
                      size: 20),
                 const SizedBox(width: 8),
                 Text(
                   action['text'],
-                  style: const TextStyle(
-                    color: AppColors.primaryGreen,
+                  style: TextStyle(
+                    color: _primaryColor,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -282,7 +272,13 @@ void _listen() async {
       padding: const EdgeInsets.symmetric(vertical: 16),
       itemCount: _messages.length,
       itemBuilder: (context, index) {
-        return MessageBubble(message: _messages[index]);
+        return MessageBubble(
+          message: _messages[index],
+          isUserMessage: _messages[index].type == MessageType.user,
+          userColor: _primaryColor,
+          botColor: _cardColor,
+          textColor: _textColor,
+        );
       },
     );
   }
@@ -296,12 +292,12 @@ void _listen() async {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppColors.primaryGreen,
+              color: _primaryColor,
               borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.local_hospital,
-              color: Colors.white,
+              color: _backgroundColor,
               size: 20,
             ),
           ),
@@ -316,7 +312,7 @@ void _listen() async {
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryGreen.withOpacity(
+                      color: _primaryColor.withOpacity(
                         0.3 + 0.7 * 
                         ((_typingAnimationController.value + index * 0.3) % 1),
                       ),
@@ -328,10 +324,10 @@ void _listen() async {
             },
           ),
           const SizedBox(width: 8),
-          const Text(
+          Text(
             'Analyzing your query...',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: _secondaryTextColor,
               fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
@@ -342,66 +338,68 @@ void _listen() async {
   }
 
   Widget _buildInputArea() {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(24),
-        topRight: Radius.circular(24),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
       ),
-    ),
-    child: SafeArea(
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _textController,
-              decoration: const InputDecoration(
-                hintText: 'Describe your health concern...',
-                hintStyle: TextStyle(color: AppColors.textLight),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              onSubmitted: (text) => _sendMessage(text),
-            ),
-          ),
-          const SizedBox(width: 8),
-          // 🎤 Microphone Button
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: IconButton(
-              onPressed: _listen,
-              icon: Icon(
-                _isListening ? Icons.mic : Icons.mic_none,
-                color: AppColors.primaryGreen,
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _textController,
+                style: TextStyle(color: _textColor),
+                decoration: InputDecoration(
+                  hintText: 'Describe your health concern...',
+                  hintStyle: TextStyle(color: _secondaryTextColor),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                onSubmitted: (text) => _sendMessage(text),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.primaryGreen,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: IconButton(
-              onPressed: _isLoading ? null : () => _sendMessage(_textController.text),
-              icon: Icon(
-                _isLoading ? Icons.hourglass_empty : Icons.send,
-                color: Colors.white,
+            const SizedBox(width: 8),
+            // Microphone Button
+            Container(
+              decoration: BoxDecoration(
+                color: _cardColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: _primaryColor.withOpacity(0.3)),
+              ),
+              child: IconButton(
+                onPressed: _listen,
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  color: _primaryColor,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: _primaryColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: IconButton(
+                onPressed: _isLoading ? null : () => _sendMessage(_textController.text),
+                icon: Icon(
+                  _isLoading ? Icons.hourglass_empty : Icons.send,
+                  color: _backgroundColor,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Future<void> _sendMessage(String text) async {
     if (text.trim().isEmpty || _isLoading) return;
@@ -453,26 +451,27 @@ void _listen() async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: _cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.info, color: AppColors.primaryGreen),
-            SizedBox(width: 8),
-            Text('About Ayurvedic First Aid'),
+            Icon(Icons.info, color: _primaryColor),
+            const SizedBox(width: 8),
+            Text('About Ayurvedic First Aid', style: TextStyle(color: _primaryColor)),
           ],
         ),
-        content: const Text(
+        content: Text(
           'This app provides traditional Ayurvedic remedies for common health issues. '
           'Always consult a qualified healthcare professional for serious conditions.\n\n'
           '⚠️ This is not a substitute for professional medical advice.',
-          style: TextStyle(height: 1.4),
+          style: TextStyle(color: _textColor, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+            child: Text('Got it', style: TextStyle(color: _primaryColor)),
           ),
         ],
       ),

@@ -1,28 +1,91 @@
 import 'package:flutter/material.dart';
 import '../models/message.dart';
-import '../utils/theme.dart';
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
+  final bool isUserMessage;
+  final Color userColor;
+  final Color botColor;
+  final Color textColor;
 
   const MessageBubble({
     Key? key,
     required this.message,
+    required this.isUserMessage,
+    this.userColor = const Color(0xFFD9F99D),
+    this.botColor = const Color(0xFF2C2C2C),
+    this.textColor = const Color(0xFFD9F99D),
   }) : super(key: key);
 
+Widget _buildSeverityWarning() {
+  if (message.severity == null || message.severity!.isEmpty) return const SizedBox();
+  
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: Colors.orange.withOpacity(0.2),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: Colors.orange),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.warning_amber, color: Colors.orange, size: 16),
+        const SizedBox(width: 4),
+        Text(
+          'Severity: ${message.severity}',
+          style: TextStyle(
+            color: Colors.orange,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildTimeLimitWarning() {
+  if (message.timeLimit == null || message.timeLimit!.isEmpty) return const SizedBox();
+  
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: Colors.blue.withOpacity(0.2),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: Colors.blue),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.access_time, color: Colors.blue, size: 16),
+        const SizedBox(width: 4),
+        Text(
+          'Time Limit: ${message.timeLimit}',
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
-    final isUser = message.type == MessageType.user;
     final isEmergency = message.isEmergency;
     final isWelcome = message.type == MessageType.welcome;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isUser) _buildAvatar(),
+          if (!isUserMessage) _buildAvatar(),
           const SizedBox(width: 8),
           Flexible(
             child: Container(
@@ -31,34 +94,36 @@ class MessageBubble extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _getBubbleColor(isUser, isEmergency, isWelcome),
-                borderRadius: _getBorderRadius(isUser),
-                border: !isUser ? Border.all(
-                  color: AppColors.botBubbleBorder,
+                color: _getBubbleColor(isUserMessage, isEmergency, isWelcome),
+                borderRadius: _getBorderRadius(isUserMessage),
+                border: !isUserMessage ? Border.all(
+                  color: userColor.withOpacity(0.3),
                   width: 1,
                 ) : null,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (isEmergency) _buildEmergencyHeader(),
-                  _buildMessageContent(),
-                  if (message.steps != null) _buildStepsList(),
-                  const SizedBox(height: 4),
-                  _buildTimestamp(),
-                ],
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    if (isEmergency) _buildEmergencyHeader(),
+    if (message.severity != null) _buildSeverityWarning(),
+    if (message.timeLimit != null) _buildTimeLimitWarning(),
+    _buildMessageContent(),
+    if (message.steps != null) _buildStepsList(),
+    const SizedBox(height: 4),
+    _buildTimestamp(),
+  ],
+),
               ),
             ),
-          ),
           const SizedBox(width: 8),
-          if (isUser) _buildUserAvatar(),
+          if (isUserMessage) _buildUserAvatar(),
         ],
       ),
     );
@@ -69,12 +134,12 @@ class MessageBubble extends StatelessWidget {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: AppColors.primaryGreen,
+        color: userColor,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.local_hospital,
-        color: Colors.white,
+        color: Colors.black,
         size: 20,
       ),
     );
@@ -85,12 +150,12 @@ class MessageBubble extends StatelessWidget {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: AppColors.earthBrown,
+        color: userColor.withOpacity(0.8),
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.person,
-        color: Colors.white,
+        color: Colors.black,
         size: 20,
       ),
     );
@@ -101,14 +166,14 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: AppColors.emergencyRed,
+        color: Colors.redAccent,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.warning, color: Colors.white, size: 16),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
           Text(
             'IMPORTANT',
             style: TextStyle(
@@ -126,9 +191,7 @@ class MessageBubble extends StatelessWidget {
     return Text(
       message.text,
       style: TextStyle(
-        color: message.type == MessageType.user 
-            ? Colors.white 
-            : AppColors.textPrimary,
+        color: isUserMessage ? Colors.black : textColor,
         fontSize: 15,
         height: 1.4,
       ),
@@ -142,17 +205,20 @@ class MessageBubble extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.lightGreen,
+        color: botColor.withOpacity(0.8),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: userColor.withOpacity(0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '📋 Steps to follow:',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: AppColors.primaryGreen,
+              color: userColor,
             ),
           ),
           const SizedBox(height: 8),
@@ -160,9 +226,9 @@ class MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               step,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textPrimary,
+                color: textColor,
               ),
             ),
           )),
@@ -176,18 +242,16 @@ class MessageBubble extends StatelessWidget {
       _formatTime(message.timestamp),
       style: TextStyle(
         fontSize: 11,
-        color: message.type == MessageType.user 
-            ? Colors.white70 
-            : AppColors.textLight,
+        color: isUserMessage ? Colors.black.withOpacity(0.7) : textColor.withOpacity(0.7),
       ),
     );
   }
 
   Color _getBubbleColor(bool isUser, bool isEmergency, bool isWelcome) {
-    if (isUser) return AppColors.userBubble;
-    if (isWelcome) return AppColors.lightGreen;
-    if (isEmergency) return AppColors.emergencyLight;
-    return AppColors.botBubble;
+    if (isUser) return userColor;
+    if (isWelcome) return botColor.withOpacity(0.8);
+    if (isEmergency) return Colors.redAccent.withOpacity(0.2);
+    return botColor;
   }
 
   BorderRadius _getBorderRadius(bool isUser) {

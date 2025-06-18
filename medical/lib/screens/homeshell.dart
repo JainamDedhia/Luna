@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medical/screens/FAQ.dart';
+import 'package:medical/screens/TermsConditions.dart';
 import 'package:medical/screens/auth_screen.dart';
 import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
+// Missing
+import 'package:medical/screens/chat_screen.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -23,7 +28,40 @@ class _HomeShellState extends State<HomeShell> {
     const MapPage(),
     const HelpPage(),
   ];
-  
+  @override
+void initState() {
+  super.initState();
+  _checkTermsAgreement();
+}
+
+Future<void> _checkTermsAgreement() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    // User is not signed in yet; skip checking
+    return;
+  }
+
+  final prefs = await SharedPreferences.getInstance();
+  final key = 'agreed_to_terms_${user.uid}';
+  final agreed = prefs.getBool(key) ?? false;
+
+  if (!agreed) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => TermsConditionsPage(
+          onAgree: () async {
+            await prefs.setBool(key, true);
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    });
+  }
+}
+
   void handleSignOut(BuildContext context) async {
     try {
       final authService = AuthService();

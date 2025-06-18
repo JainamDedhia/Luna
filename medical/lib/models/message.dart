@@ -7,6 +7,8 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isEmergency;
   final List<String>? steps; // For step-by-step remedies
+  final String? severity;    // Severity level (e.g., Mild, Moderate, Severe)
+  final String? timeLimit;   // Recommended time limit for action
 
   ChatMessage({
     required this.id,
@@ -15,6 +17,8 @@ class ChatMessage {
     DateTime? timestamp,
     this.isEmergency = false,
     this.steps,
+    this.severity,
+    this.timeLimit,
   }) : timestamp = timestamp ?? DateTime.now();
 
   // Factory constructor for welcome message
@@ -36,23 +40,43 @@ class ChatMessage {
   }
 
   // Factory constructor for bot message
-  factory ChatMessage.bot(String text, {bool isEmergency = false, List<String>? steps}) {
+  factory ChatMessage.bot(
+    String text, {
+    bool isEmergency = false,
+    List<String>? steps,
+    String? severity,
+    String? timeLimit,
+  }) {
     return ChatMessage(
       id: 'bot_${DateTime.now().millisecondsSinceEpoch}',
       text: text,
       type: isEmergency ? MessageType.emergency : MessageType.bot,
       isEmergency: isEmergency,
       steps: steps,
+      severity: severity,
+      timeLimit: timeLimit,
     );
   }
 
   // Factory constructor for emergency message
-  factory ChatMessage.emergency(String text) {
+  factory ChatMessage.emergency(
+    String text, {
+    String? severity,
+    String? timeLimit,
+  }) {
     return ChatMessage(
       id: 'emergency_${DateTime.now().millisecondsSinceEpoch}',
       text: text,
       type: MessageType.emergency,
       isEmergency: true,
+      severity: severity,
+      timeLimit: timeLimit,
     );
   }
+
+  // Helper method to check if message has severity info
+  bool get hasSeverity => severity != null && severity!.isNotEmpty;
+
+  // Helper method to check if message has time limit info
+  bool get hasTimeLimit => timeLimit != null && timeLimit!.isNotEmpty;
 }
