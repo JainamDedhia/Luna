@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medical/screens/FAQ.dart';
-import 'package:medical/screens/TermsConditions.dart';
+import 'package:medical/screens/TermsConditionsPage.dart';
 import 'package:medical/screens/auth_screen.dart';
 import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
+import 'package:medical/screens/hospital_locator_page.dart';
 import 'dart:convert';
 import 'dart:io';
 // Missing
@@ -27,59 +28,60 @@ class _HomeShellState extends State<HomeShell> {
   static final _pages = <Widget>[
     const MainPage(),
     ChatScreen(),
-    const MapPage(),
+    HospitalLocatorPage(),
     const HelpPage(),
   ];
   @override
-void initState() {
-  super.initState();
-  _checkTermsAgreement();
-}
-
-Future<void> _checkTermsAgreement() async {
-  final user = FirebaseAuth.instance.currentUser;
-
-  if (user == null) {
-    // User is not signed in yet; skip checking
-    return;
+  void initState() {
+    super.initState();
+    _checkTermsAgreement();
   }
 
-  final prefs = await SharedPreferences.getInstance();
-  final key = 'agreed_to_terms_${user.uid}';
-  final agreed = prefs.getBool(key) ?? false;
+  Future<void> _checkTermsAgreement() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (!agreed) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => TermsConditionsPage(
-          onAgree: () async {
-            await prefs.setBool(key, true);
-            Navigator.of(context).pop();
-          },
-        ),
-      );
-    });
+    if (user == null) {
+      // User is not signed in yet; skip checking
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'agreed_to_terms_${user.uid}';
+    final agreed = prefs.getBool(key) ?? false;
+
+    if (!agreed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (_) => TermsConditionsPage(
+                onAgree: () async {
+                  await prefs.setBool(key, true);
+                  Navigator.of(context).pop();
+                },
+              ),
+        );
+      });
+    }
   }
-}
 
   void handleSignOut(BuildContext context) async {
     try {
       final authService = AuthService();
       await authService.signOut();
-      
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const AuthScreen()),
         (route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign out failed: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign out failed: $e')));
     }
   }
-  
+
   void _onNavTap(int newIdx) => setState(() => _index = newIdx);
 
   @override
@@ -91,10 +93,11 @@ Future<void> _checkTermsAgreement() async {
         elevation: 0,
         backgroundColor: const Color(0xFF0A0A0A),
         leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
+          builder:
+              (ctx) => IconButton(
+                icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
         ),
         actions: [
           Padding(
@@ -114,7 +117,7 @@ Future<void> _checkTermsAgreement() async {
                 ],
               ),
               child: const Icon(
-                Icons.account_circle_outlined, 
+                Icons.account_circle_outlined,
                 size: 24,
                 color: Color(0xFF0A0A0A),
               ),
@@ -182,9 +185,7 @@ class _MainDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Color(0xFF0A0A0A),
-            ),
+            decoration: const BoxDecoration(color: Color(0xFF0A0A0A)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -211,7 +212,7 @@ class _MainDrawer extends StatelessWidget {
                 const Text(
                   'Luna Menu',
                   style: TextStyle(
-                    color: Color(0xFF9AFF00), 
+                    color: Color(0xFF9AFF00),
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
@@ -233,7 +234,11 @@ class _MainDrawer extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const FAQPage()),
             );
           }),
-          _buildDrawerItem(Icons.settings, 'Settings', () => Navigator.pop(context)),
+          _buildDrawerItem(
+            Icons.settings,
+            'Settings',
+            () => Navigator.pop(context),
+          ),
           _buildDrawerItem(Icons.logout, 'Sign Out', () {
             Navigator.pop(context);
             parentState?.handleSignOut(context);
@@ -248,7 +253,7 @@ class _MainDrawer extends StatelessWidget {
       leading: Icon(icon, color: const Color(0xFF9AFF00)),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white, fontSize: 16),
       ),
       onTap: onTap,
       hoverColor: const Color(0xFF9AFF00).withOpacity(0.1),
@@ -269,10 +274,7 @@ class MainPage extends StatelessWidget {
         gradient: RadialGradient(
           center: Alignment.center,
           radius: 1.2,
-          colors: [
-            Color(0xFF1A1A1A),
-            Color(0xFF0A0A0A),
-          ],
+          colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
         ),
       ),
       child: SafeArea(
@@ -351,7 +353,10 @@ class MainPage extends StatelessWidget {
                     // Search Bar
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1A1A1A),
                         borderRadius: BorderRadius.circular(25),
@@ -432,9 +437,9 @@ class _LocationBarState extends State<LocationBar> {
       "Take early morning walks instead of evening.",
       "Use vetiver (khus) root-infused water.",
       "Massage with cooling oils like coconut.",
-      "Consume buttermilk for digestion and cooling."
+      "Consume buttermilk for digestion and cooling.",
     ],
-        'clouds': [
+    'clouds': [
       "Do light yoga or stretching indoors.",
       "Drink warm ginger tea to uplift mood.",
       "Eat soups with turmeric and garlic.",
@@ -454,7 +459,7 @@ class _LocationBarState extends State<LocationBar> {
       "Avoid sleeping during the day.",
       "Do brisk walks in fresh air if not raining.",
       "Take golden milk (haldi + milk) at bedtime.",
-      "Chew fennel seeds post meals to aid digestion."
+      "Chew fennel seeds post meals to aid digestion.",
     ],
     'rain': [
       "Drink tulsi-ginger tea to prevent cold.",
@@ -476,7 +481,7 @@ class _LocationBarState extends State<LocationBar> {
       "Avoid walking barefoot.",
       "Use ginger-honey paste for sore throat.",
       "Include cinnamon in your tea.",
-      "Take a teaspoon of chawanprash daily."
+      "Take a teaspoon of chawanprash daily.",
     ],
     'mist': [
       "Inhale eucalyptus or peppermint oil steam.",
@@ -498,7 +503,7 @@ class _LocationBarState extends State<LocationBar> {
       "Drink tulsi-infused tea.",
       "Practice anulom-vilom breathing.",
       "Use an oil lamp with ayurvedic oils.",
-      "Take herbal kadha twice a week."
+      "Take herbal kadha twice a week.",
     ],
     'thunderstorm': [
       "Stay indoors and sip warm ginger tea.",
@@ -520,7 +525,7 @@ class _LocationBarState extends State<LocationBar> {
       "Burn bay leaf for aroma therapy.",
       "Sleep early and wake with sunrise.",
       "Avoid sleeping during the day.",
-      "Practice tratak (candle gazing) to calm the mind."
+      "Practice tratak (candle gazing) to calm the mind.",
     ],
     'snow': [
       "Drink hot ginger-turmeric decoction daily.",
@@ -542,9 +547,9 @@ class _LocationBarState extends State<LocationBar> {
       "Stay active indoors.",
       "Eat bajra (millet) roti for warmth.",
       "Consume saffron milk before bed.",
-      "Keep feet and ears covered."
+      "Keep feet and ears covered.",
     ],
-        'drizzle': [
+    'drizzle': [
       "Take tulsi & ginger herbal decoction.",
       "Avoid ice-cold beverages.",
       "Drink warm fennel and ajwain tea.",
@@ -564,9 +569,9 @@ class _LocationBarState extends State<LocationBar> {
       "Do gentle surya namaskar indoors.",
       "Drink warm water throughout the day.",
       "Avoid sleeping in damp places.",
-      "Burn neem leaves for fumigation."
+      "Burn neem leaves for fumigation.",
     ],
-        'fog': [
+    'fog': [
       "Avoid early morning walks.",
       "Drink warm water with lemon daily.",
       "Use turmeric and ginger in food.",
@@ -586,9 +591,9 @@ class _LocationBarState extends State<LocationBar> {
       "Avoid oily and stale food.",
       "Take amrutarishta (immunity tonic).",
       "Use woolen caps to protect sinuses.",
-      "Eat easily digestible foods."
+      "Eat easily digestible foods.",
     ],
-        'dust': [
+    'dust': [
       "Use nose masks when outdoors.",
       "Drink licorice tea for throat relief.",
       "Apply coconut oil inside nostrils.",
@@ -608,9 +613,9 @@ class _LocationBarState extends State<LocationBar> {
       "Drink basil-lemon herbal tea.",
       "Avoid fried food in dusty season.",
       "Stay hydrated and keep lips moist.",
-      "Clean nostrils with saline spray."
+      "Clean nostrils with saline spray.",
     ],
-        'smoke': [
+    'smoke': [
       "Avoid exposure to traffic fumes.",
       "Take turmeric milk at night.",
       "Use ayurvedic nasal oil (Anu taila).",
@@ -630,9 +635,9 @@ class _LocationBarState extends State<LocationBar> {
       "Wash face and hands regularly.",
       "Avoid strenuous activities outdoors.",
       "Do oil pulling with sesame oil.",
-      "Avoid spicy and fermented foods."
+      "Avoid spicy and fermented foods.",
     ],
-        'haze': [
+    'haze': [
       "Use steam inhalation daily.",
       "Drink warm herbal kadha.",
       "Use rose water for eye cooling.",
@@ -652,9 +657,9 @@ class _LocationBarState extends State<LocationBar> {
       "Inhale mint steam to open nostrils.",
       "Wash eyes with cold water.",
       "Drink tulsi-ginger tea daily.",
-      "Avoid yogurt and cold foods."
+      "Avoid yogurt and cold foods.",
     ],
-        'default': [
+    'default': [
       "Drink warm water with lemon every morning.",
       "Avoid processed sugar & fried food.",
       "Do daily abhyanga with sesame oil.",
@@ -674,9 +679,9 @@ class _LocationBarState extends State<LocationBar> {
       "Spend time in nature or sunlight.",
       "Use rock salt instead of table salt.",
       "Take short walks after meals.",
-      "Practice gratitude and silence daily."
+      "Practice gratitude and silence daily.",
     ],
-        'clear': [
+    'clear': [
       "Drink lemon water with honey in the morning.",
       "Apply aloe vera gel on exposed skin.",
       "Avoid spicy, oily, and fried food.",
@@ -696,7 +701,7 @@ class _LocationBarState extends State<LocationBar> {
       "Add mint chutney to meals.",
       "Take amla juice in the morning.",
       "Avoid direct exposure to harsh sun.",
-      "Use cooling herbs like coriander & vetiver."
+      "Use cooling herbs like coriander & vetiver.",
     ],
   };
   @override
@@ -716,7 +721,8 @@ class _LocationBarState extends State<LocationBar> {
       perm = await Geolocator.requestPermission();
     }
 
-    if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
+    if (perm == LocationPermission.denied ||
+        perm == LocationPermission.deniedForever) {
       setState(() {
         _text = 'Location permission denied';
         _busy = false;
@@ -725,8 +731,13 @@ class _LocationBarState extends State<LocationBar> {
     }
 
     try {
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
-      final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
+      );
+      final placemarks = await placemarkFromCoordinates(
+        pos.latitude,
+        pos.longitude,
+      );
 
       String? address;
       String? city;
@@ -743,9 +754,10 @@ class _LocationBarState extends State<LocationBar> {
       }
 
       setState(() {
-        _text = address?.isNotEmpty == true
-            ? address!
-            : 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lon: ${pos.longitude.toStringAsFixed(6)}';
+        _text =
+            address?.isNotEmpty == true
+                ? address!
+                : 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lon: ${pos.longitude.toStringAsFixed(6)}';
       });
 
       if (city != null) {
@@ -760,7 +772,8 @@ class _LocationBarState extends State<LocationBar> {
 
   Future<void> _fetchRemedy(String city) async {
     final apiKey = '2da60aa52aed4523dbca6d31deb340c9';
-    final url = 'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric';
+    final url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric';
 
     try {
       final client = HttpClient();
@@ -792,9 +805,7 @@ class _LocationBarState extends State<LocationBar> {
           padding: const EdgeInsets.only(right: 4),
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1A),
-            border: Border.all(
-              color: const Color(0xFF9AFF00).withOpacity(0.3),
-            ),
+            border: Border.all(color: const Color(0xFF9AFF00).withOpacity(0.3)),
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
@@ -808,16 +819,19 @@ class _LocationBarState extends State<LocationBar> {
             children: [
               IconButton(
                 onPressed: _busy ? null : _refreshLocation,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9AFF00)),
-                        ),
-                      )
-                    : const Icon(Icons.refresh, color: Color(0xFF9AFF00)),
+                icon:
+                    _busy
+                        ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF9AFF00),
+                            ),
+                          ),
+                        )
+                        : const Icon(Icons.refresh, color: Color(0xFF9AFF00)),
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -827,10 +841,7 @@ class _LocationBarState extends State<LocationBar> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       _text,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
+                      style: const TextStyle(fontSize: 15, color: Colors.white),
                       overflow: TextOverflow.visible,
                     ),
                   ),
@@ -856,6 +867,7 @@ class _LocationBarState extends State<LocationBar> {
     );
   }
 }
+
 /// ─────────────────────────
 /// Page stubs for the other tabs
 /// ─────────────────────────
@@ -865,10 +877,7 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     color: const Color(0xFF0A0A0A),
     child: const Center(
-      child: Text(
-        'Chat page',
-        style: TextStyle(color: Colors.white),
-      ),
+      child: Text('Chat page', style: TextStyle(color: Colors.white)),
     ),
   );
 }
@@ -879,10 +888,7 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     color: const Color(0xFF0A0A0A),
     child: const Center(
-      child: Text(
-        'Map / Nearby',
-        style: TextStyle(color: Colors.white),
-      ),
+      child: Text('Map / Nearby', style: TextStyle(color: Colors.white)),
     ),
   );
 }
@@ -893,10 +899,7 @@ class HelpPage extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     color: const Color(0xFF0A0A0A),
     child: const Center(
-      child: Text(
-        'Help & Support',
-        style: TextStyle(color: Colors.white),
-      ),
+      child: Text('Help & Support', style: TextStyle(color: Colors.white)),
     ),
   );
 }
