@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medical/screens/FAQ.dart';
-import 'package:medical/screens/TermsConditionsPage.dart';
+import 'package:medical/screens/TermsConditions.dart';
 import 'package:medical/screens/auth_screen.dart';
 import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';

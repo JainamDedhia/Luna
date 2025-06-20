@@ -4,7 +4,7 @@ import '../models/message.dart';
 
 class ChatService {
   // Replace with your ngrok URL (get this from your Python console output)
-  static const String baseUrl = 'https://4d55-34-82-147-19.ngrok-free.app'; // e.g. 'https://1234-5678-9012.ngrok-free.app'
+  static const String baseUrl = 'https://7ea9-34-125-136-71.ngrok-free.app'; // e.g. 'https://1234-5678-9012.ngrok-free.app'
   
   static Future<ChatMessage> sendMessage(String userMessage) async {
   try {
@@ -28,12 +28,9 @@ class ChatService {
         bool isEmergency = _isEmergencyResponse(responseText) || 
                           (severity?.toLowerCase() == 'severe');
         
-        List<String>? steps = _parseSteps(responseText);
-
         return ChatMessage.bot(
           responseText,
           isEmergency: isEmergency,
-          steps: steps,
           severity: severity,
           timeLimit: timeLimit,
         );
@@ -57,17 +54,4 @@ class ChatService {
     return emergencyKeywords.any((keyword) => response.toLowerCase().contains(keyword));
   }
   
-  static List<String>? _parseSteps(String response) {
-    final lines = response.split('\n');
-    List<String> steps = [];
-    
-    for (String line in lines) {
-      String trimmed = line.trim();
-      if (RegExp(r'^\d+\.').hasMatch(trimmed)) {
-        steps.add(trimmed);
-      }
-    }
-    
-    return steps.isNotEmpty ? steps : null;
-  }
 }
