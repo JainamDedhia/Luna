@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'dart:io';
 // Missing
 import 'package:medical/screens/chat_screen.dart';
+import 'Profile.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -102,29 +103,37 @@ class _HomeShellState extends State<HomeShell> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 14),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF9AFF00),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF9AFF00).withOpacity(0.3),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-                ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF9AFF00),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF9AFF00).withOpacity(0.3),
+                blurRadius: 8,
+                spreadRadius: 2,
               ),
-              child: const Icon(
-                Icons.account_circle_outlined,
-                size: 24,
-                color: Color(0xFF0A0A0A),
-              ),
-            ),
+            ],
           ),
-        ],
+          child: const Icon(
+            Icons.account_circle_outlined,
+            size: 24,
+            color: Color(0xFF0A0A0A),
+          ),
+        ),
       ),
+    ),
+  ],
+  ),
       body: _pages[_index],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
