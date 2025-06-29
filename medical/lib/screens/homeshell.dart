@@ -16,6 +16,10 @@ import 'dart:io';
 import 'package:medical/screens/chat_screen.dart';
 import 'Profile.dart';
 
+import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
+import '../locale_provider.dart';
+
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -86,7 +90,9 @@ class _HomeShellState extends State<HomeShell> {
   void _onNavTap(int newIdx) => setState(() => _index = newIdx);
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       drawer: const _MainDrawer(),
@@ -94,11 +100,10 @@ class _HomeShellState extends State<HomeShell> {
         elevation: 0,
         backgroundColor: const Color(0xFF0A0A0A),
         leading: Builder(
-          builder:
-              (ctx) => IconButton(
-                icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
+          builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
         ),
         actions: [
           Padding(
@@ -133,7 +138,7 @@ class _HomeShellState extends State<HomeShell> {
       ),
     ),
   ],
-  ),
+      ),
       body: _pages[_index],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -145,35 +150,35 @@ class _HomeShellState extends State<HomeShell> {
             ),
           ),
         ),
-        child: NavigationBar(
-          backgroundColor: const Color(0xFF0A0A0A),
+      child:NavigationBar(
+        backgroundColor: const Color(0xFF0A0A0A),
           selectedIndex: _index,
           onDestinationSelected: _onNavTap,
           indicatorColor: const Color(0xFF9AFF00).withOpacity(0.2),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined, color: Color(0xFF666666)),
-              selectedIcon: Icon(Icons.home, color: Color(0xFF9AFF00)),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline, color: Color(0xFF666666)),
-              selectedIcon: Icon(Icons.chat_bubble, color: Color(0xFF9AFF00)),
-              label: 'Chat',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.place_outlined, color: Color(0xFF666666)),
-              selectedIcon: Icon(Icons.place, color: Color(0xFF9AFF00)),
-              label: 'Map',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.call_outlined, color: Color(0xFF666666)),
-              selectedIcon: Icon(Icons.call, color: Color(0xFF9AFF00)),
-              label: 'Help',
-            ),
-          ],
-        ),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.home_outlined), 
+            selectedIcon: Icon(Icons.home, color: Color(0xFF9AFF00)),
+            label: l10n.home
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.chat_bubble_outline), 
+            selectedIcon: Icon(Icons.chat, color: Color(0xFF9AFF00)),
+            label: l10n.chatPage // You might want to add this to your ARB files
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.place_outlined), 
+            selectedIcon: Icon(Icons.place, color: Color(0xFF9AFF00)),
+            label: l10n.mapPage // You might want to add this to your ARB files
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.call_outlined), 
+            selectedIcon: Icon(Icons.call, color: Color(0xFF9AFF00)),
+            label: l10n.helpPage // You might want to add this to your ARB files
+          ),
+        ],
       ),
+    ),
     );
   }
 }
@@ -183,10 +188,70 @@ class _HomeShellState extends State<HomeShell> {
 /// ─────────────────────────
 class _MainDrawer extends StatelessWidget {
   const _MainDrawer();
+  
+
+  //Mit Code
+  void _showLanguageDialog(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(l10n.changeLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _LanguageTile(
+              title: 'English',
+              flag: '🇺🇸',
+              locale: const Locale('en'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+            _LanguageTile(
+              title: 'हिंदी',
+              flag: '🇮🇳',
+              locale: const Locale('hi'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('hi'));
+                Navigator.pop(context);
+              },
+            ),
+            _LanguageTile(
+              title: 'ગુજરાતી',
+              flag: '🇮🇳',
+              locale: const Locale('gu'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('gu'));
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('cancel'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  //mit code end here
+
 
   @override
   Widget build(BuildContext context) {
     final parentState = context.findAncestorStateOfType<_HomeShellState>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Drawer(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -218,8 +283,8 @@ class _MainDrawer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Luna Menu',
+                Text(
+                  l10n.title,//una menu
                   style: TextStyle(
                     color: Color(0xFF9AFF00),
                     fontSize: 24,
@@ -229,46 +294,103 @@ class _MainDrawer extends StatelessWidget {
               ],
             ),
           ),
-          _buildDrawerItem(Icons.home, 'Home', () => Navigator.pop(context)),
-          _buildDrawerItem(Icons.school, 'Educational Lessons', () {
-            Navigator.pop(context);
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const EducationalLessonsPage()),
-            );
-          }),
-          _buildDrawerItem(Icons.question_answer_outlined, 'FAQ', () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FAQPage()),
-            );
-          }),
-          _buildDrawerItem(
-            Icons.settings,
-            'Settings',
-            () => Navigator.pop(context),
+          ListTile(
+            leading: const Icon(Icons.home, color: Color(0xFF9AFF00)),
+            title: Text(l10n.home, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () => Navigator.pop(context),
           ),
-          _buildDrawerItem(Icons.logout, 'Sign Out', () {
-            Navigator.pop(context);
-            parentState?.handleSignOut(context);
-          }),
+
+          ListTile(
+            leading: const Icon(Icons.school, color: Color(0xFF9AFF00)),
+            title: Text(l10n.educationalLessons, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const EducationalLessonsPage()),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.question_answer_outlined, color: Color(0xFF9AFF00)),
+            title: Text(l10n.faq, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FAQPage()),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.settings, color: Color(0xFF9AFF00)),
+            title: Text(l10n.settings, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () => Navigator.pop(context),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.logout, color: Color(0xFF9AFF00)),
+            title: Text(l10n.signOut, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+              parentState?.handleSignOut(context);
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.language, color: Color(0xFF9AFF00)),
+            title: Text(l10n.changeLanguage, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+              Future.delayed(const Duration(milliseconds: 100), () {
+                _showLanguageDialog(context);
+              });
+            },
+          ),
+
         ],
       ),
     );
   }
 
-  Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
+  // Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
+  //   return ListTile(
+  //     leading: Icon(icon, color: const Color(0xFF9AFF00)),
+  //     title: Text(
+  //       title,
+  //       style: const TextStyle(color: Colors.white, fontSize: 16),
+  //     ),
+  //     onTap: onTap,
+  //     hoverColor: const Color(0xFF9AFF00).withOpacity(0.1),
+  //   );
+  // }
+}
+
+//mit code
+class _LanguageTile extends StatelessWidget {
+  final String title;
+  final String flag;
+  final Locale locale;
+  final VoidCallback onTap;
+
+  const _LanguageTile({
+    required this.title,
+    required this.flag,
+    required this.locale,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF9AFF00)),
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
-      ),
+      title: Text(title),
+      leading: Text(flag, style: const TextStyle(fontSize: 20)),
       onTap: onTap,
-      hoverColor: const Color(0xFF9AFF00).withOpacity(0.1),
     );
   }
 }
+//mit code end here
 
 /// ─────────────────────────
 /// Page 1 – Home
@@ -421,7 +543,7 @@ class LocationBar extends StatefulWidget {
 }
 
 class _LocationBarState extends State<LocationBar> {
-  String _text = 'Fetching location…';
+  String _text = '';
   String _remedy = '';
   bool _busy = false;
 
@@ -716,10 +838,15 @@ class _LocationBarState extends State<LocationBar> {
   @override
   void initState() {
     super.initState();
-    _refreshLocation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _text = l10n.locationFetching);
+      _refreshLocation();
+    });
   }
 
   Future<void> _refreshLocation() async {
+    final l10n =AppLocalizations.of(context)!;
     setState(() {
       _busy = true;
       _remedy = '';
@@ -733,7 +860,7 @@ class _LocationBarState extends State<LocationBar> {
     if (perm == LocationPermission.denied ||
         perm == LocationPermission.deniedForever) {
       setState(() {
-        _text = 'Location permission denied';
+        _text = l10n.locationDenied;
         _busy = false;
       });
       return;
@@ -773,7 +900,7 @@ class _LocationBarState extends State<LocationBar> {
         await _fetchRemedy(city);
       }
     } catch (_) {
-      setState(() => _text = 'Location unavailable');
+      setState(() => _text = l10n.locationUnavailable);
     } finally {
       setState(() => _busy = false);
     }
@@ -891,16 +1018,16 @@ class ChatPage extends StatelessWidget {
   );
 }
 
-class MapPage extends StatelessWidget {
-  const MapPage({super.key});
-  @override
-  Widget build(BuildContext context) => Container(
-    color: const Color(0xFF0A0A0A),
-    child: const Center(
-      child: Text('Map / Nearby', style: TextStyle(color: Colors.white)),
-    ),
-  );
-}
+// class MapPage extends StatelessWidget {
+//   const MapPage({super.key});
+//   @override
+//   Widget build(BuildContext context) => Container(
+//     color: const Color(0xFF0A0A0A),
+//     child: const Center(
+//       child: Text('Map / Nearby', style: TextStyle(color: Colors.white)),
+//     ),
+//   );
+// }
 
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});

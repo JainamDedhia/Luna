@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class FAQPage extends StatelessWidget {
   const FAQPage({super.key});
 
-  final List<Map<String, String>> faqs = const [
-    {
-      'question': 'What is Luna?',
-      'answer':
-          'Luna is an Ayurvedic first-aid guide offering natural remedies for common issues.',
-    },
-    {
-      'question': 'Is this medically certified?',
-      'answer':
-          'Our content is based on traditional Ayurvedic sources. We recommend consulting a professional for serious cases.',
-    },
-    {
-      'question': 'How do I contact support?',
-      'answer':
-          'Tap on the "Contact us" button below or reach out via the settings section.',
-    },
-    {
-      'question': 'Can I use it offline?',
-      'answer': 'Yes! The basic remedies are available even without internet.',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
+  final faqs = [
+  {'question': l10n.faqQ1, 'answer': l10n.faqA1},
+  {'question': l10n.faqQ2, 'answer': l10n.faqA2},
+  {'question': l10n.faqQ3, 'answer': l10n.faqA3},
+  {'question': l10n.faqQ4, 'answer': l10n.faqA4},
+  ];
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
       appBar: AppBar(
@@ -44,8 +31,8 @@ class FAQPage extends StatelessWidget {
                   vertical: 10,
                 ),
                 children: [
-                  const Text(
-                    "FAQ",
+                  Text(
+                    l10n.faqTitle,
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -54,7 +41,7 @@ class FAQPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Get quick answers to your questions.\nTo understand more, contact us.",
+                    l10n.faqSubtitle,
                     style: TextStyle(fontSize: 16, color: Colors.grey[300]),
                   ),
                   const SizedBox(height: 28),
@@ -83,8 +70,8 @@ class FAQPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        "Read all FAQ",
+                      child: Text(
+                        l10n.readAllFAQ,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -103,8 +90,8 @@ class FAQPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        "Contact us",
+                      child: Text(
+                        l10n.contactUs,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),

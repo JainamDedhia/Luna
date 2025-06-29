@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../l10n/app_localizations.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -25,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
       appBar: AppBar(
@@ -32,8 +35,8 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        title: const Text(
-          'Profile',
+        title: Text(
+          l10n.profile,
           style: TextStyle(
             color: Color(0xFFB6F265),
             fontWeight: FontWeight.bold,
@@ -73,9 +76,9 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 30),
           Divider(color: Colors.grey[800], thickness: 1),
           const SizedBox(height: 10),
-          _buildInfoTile(Icons.email, 'Email', 'haileyjons@example.com'),
-          _buildInfoTile(Icons.phone, 'Phone', '+91 98765 43210'),
-          _buildInfoTile(Icons.location_on, 'Location', 'Ronbinsville, New Jersey'),
+          _buildInfoTile(Icons.email, l10n.email, 'haileyjons@example.com'),
+          _buildInfoTile(Icons.phone, l10n.phone, '+91 98765 43210'),
+          _buildInfoTile(Icons.location_on, l10n.location, 'Ronbinsville, New Jersey'),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -95,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     icon: const Icon(Icons.edit),
-                    label: const Text("Edit"),
+                    label: Text(l10n.edit),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -113,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     icon: const Icon(Icons.logout),
-                    label: const Text("Logout"),
+                    label: Text(l10n.logout),
                   ),
                 ),
               ],

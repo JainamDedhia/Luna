@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:math' as math;
+import '../l10n/app_localizations.dart';
 
 class HospitalLocatorPage extends StatefulWidget {
   const HospitalLocatorPage({Key? key}) : super(key: key);
@@ -520,12 +521,14 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0A0A),
-        title: const Text(
-          'Hospitals Near Me',
+        title: Text(
+          l10n.hosNearME,
           style: TextStyle(
             color: Color(0xFF9AFF00),
             fontWeight: FontWeight.w600,
@@ -647,8 +650,8 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                       child: Column(
                         children: [
                           const SizedBox(height: 16),
-                          const Text(
-                            'Nearby Hospitals',
+                          Text(
+                            l10n.hosNearBY,
                             style: TextStyle(
                               color: Color(0xFF9AFF00),
                               fontSize: 18,

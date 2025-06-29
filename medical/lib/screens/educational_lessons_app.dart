@@ -2,68 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class EducationalLessonsPage extends StatelessWidget {
   const EducationalLessonsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
+
     final List<Map<String, dynamic>> lessons = [
       {
-        'title': 'First Aid',
+        'title': l10n.lessonFirstAid,
         'lessons': 2,
         'icon': Icons.medical_services,
         'bgColor': const Color(0xFF84CC16),
       },
       {
-        'title': 'CPR',
+        'title': l10n.lessonCPR,
         'lessons': 5,
         'icon': Icons.favorite,
         'bgColor': const Color(0xFFE11D48),
       },
       {
-        'title': 'Burn Treatment',
+        'title': l10n.lessonBurn,
         'lessons': 10,
         'icon': Icons.local_fire_department,
         'bgColor': Colors.deepOrange,
       },
       {
-        'title': 'Snake Bite',
+        'title': l10n.lessonSnake,
         'lessons': 2,
         'icon': Icons.bug_report,
         'bgColor': Colors.green,
       },
       {
-        'title': 'Fracture Care',
+        'title': l10n.lessonFracture,
         'lessons': 4,
         'icon': Icons.accessibility_new,
         'bgColor': Colors.blueAccent,
       },
       {
-        'title': 'Allergic Reaction',
+        'title': l10n.lessonAllergy,
         'lessons': 3,
         'icon': Icons.warning_amber,
         'bgColor': Colors.amber,
       },
       {
-        'title': 'Heat Stroke',
+        'title': l10n.lessonHeat,
         'lessons': 6,
         'icon': Icons.wb_sunny,
         'bgColor': Colors.orangeAccent,
       },
       {
-        'title': 'Poisoning',
+        'title': l10n.lessonPoison,
         'lessons': 3,
         'icon': Icons.science,
         'bgColor': Colors.purple,
       },
       {
-        'title': 'Drowning Rescue',
+        'title': l10n.lessonDrowning,
         'lessons': 4,
         'icon': Icons.water,
         'bgColor': Colors.cyan,
       },
     ];
+
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -74,11 +78,11 @@ class EducationalLessonsPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Color(0xFFD9F99D)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Educational Lessons',
+              l10n.educationalLessons,
               style: TextStyle(
                 fontSize: 22,
                 color: Color(0xFFD9F99D),
@@ -86,7 +90,7 @@ class EducationalLessonsPage extends StatelessWidget {
               ),
             ),
             Text(
-              'For yourself and your loved ones',
+              l10n.educationSubtitle,
               style: TextStyle(fontSize: 12, color: Color(0xFFD9F99D)),
             ),
           ],
