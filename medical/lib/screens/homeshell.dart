@@ -232,6 +232,46 @@ class _MainDrawer extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
+            _LanguageTile(
+              title: 'मराठी',
+              flag: '🇮🇳',
+              locale: const Locale('mr'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('mr'));
+                Navigator.pop(context);
+              },
+            ),
+            _LanguageTile(
+              title: 'Tamil',
+              flag: '🇮🇳',
+              locale: const Locale('ta'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('ta'));
+                Navigator.pop(context);
+              },
+            ),
+            _LanguageTile(
+              title: 'Telgu',
+              flag: '🇮🇳',
+              locale: const Locale('te'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('te'));
+                Navigator.pop(context);
+              },
+            ),
+            _LanguageTile(
+              title: 'Malayayam',
+              flag: '🇮🇳',
+              locale: const Locale('ml'),
+              onTap: () {
+                Provider.of<LocaleProvider>(context, listen: false)
+                    .setLocale(const Locale('ml'));
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
         actions: [
