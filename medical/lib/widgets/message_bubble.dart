@@ -23,26 +23,26 @@ Widget _buildSeverityWarning() {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     margin: const EdgeInsets.only(bottom: 8),
-    decoration: BoxDecoration(
-      color: Colors.orange.withOpacity(0.2),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.orange),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.warning_amber, color: Colors.orange, size: 16),
-        const SizedBox(width: 4),
-        Text(
-          'Severity: ${message.severity}',
-          style: TextStyle(
-            color: Colors.orange,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    ),
+    // decoration: BoxDecoration(
+    //   color: Colors.orange.withOpacity(0.2),
+    //   borderRadius: BorderRadius.circular(8),
+    //   border: Border.all(color: Colors.orange),
+    // ),
+    // child: Row(
+    //   mainAxisSize: MainAxisSize.min,
+    //   // children: [
+    //   //   Icon(Icons.warning_amber, color: Colors.orange, size: 16),
+    //   //   const SizedBox(width: 4),
+    //   //   Text(
+    //   //     'Severity: ${message.severity}',
+    //   //     style: TextStyle(
+    //   //       color: Colors.orange,
+    //   //       fontSize: 12,
+    //   //       fontWeight: FontWeight.w500,
+    //   //     ),
+    //   //   ),
+    //   // ],
+    // ),
   );
 }
 
@@ -52,26 +52,26 @@ Widget _buildTimeLimitWarning() {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     margin: const EdgeInsets.only(bottom: 8),
-    decoration: BoxDecoration(
-      color: Colors.blue.withOpacity(0.2),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.blue),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.access_time, color: Colors.blue, size: 16),
-        const SizedBox(width: 4),
-        Text(
-          'Time Limit: ${message.timeLimit}',
-          style: TextStyle(
-            color: Colors.blue,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    ),
+    // decoration: BoxDecoration(
+    //   color: Colors.blue.withOpacity(0.2),
+    //   borderRadius: BorderRadius.circular(8),
+    //   border: Border.all(color: Colors.blue),
+    // ),
+    // child: Row(
+    //   mainAxisSize: MainAxisSize.min,
+    //   // children: [
+    //   //   Icon(Icons.access_time, color: Colors.blue, size: 16),
+    //   //   const SizedBox(width: 4),
+    //   //   Text(
+    //   //     'Time Limit: ${message.timeLimit}',
+    //   //     style: TextStyle(
+    //   //       color: Colors.blue,
+    //   //       fontSize: 12,
+    //   //       fontWeight: FontWeight.w500,
+    //   //     ),
+    //   //   ),
+    //   // ],
+    // ),
   );
 }
   @override
@@ -188,15 +188,18 @@ Widget _buildTimeLimitWarning() {
   }
 
   Widget _buildMessageContent() {
-    return Text(
-      message.text,
-      style: TextStyle(
-        color: isUserMessage ? Colors.black : textColor,
-        fontSize: 15,
-        height: 1.4,
-      ),
-    );
-  }
+  return Text(
+    message.text,
+    softWrap: true,
+    overflow: TextOverflow.visible,
+    style: TextStyle(
+      color: isUserMessage ? Colors.black : textColor,
+      fontSize: 15,
+      height: 1.4,
+    ),
+  );
+}
+
 
   Widget _buildStepsList() {
     if (message.steps == null || message.steps!.isEmpty) return const SizedBox();

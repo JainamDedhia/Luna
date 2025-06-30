@@ -7,6 +7,7 @@ import 'package:medical/screens/TermsConditions.dart';
 import 'package:medical/screens/auth_screen.dart';
 import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';
+import 'package:medical/screens/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import 'package:medical/screens/hospital_locator_page.dart';
@@ -15,10 +16,11 @@ import 'dart:io';
 // Missing
 import 'package:medical/screens/chat_screen.dart';
 import 'Profile.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../locale_provider.dart';
+import 'package:medical/screens/helpsupport.dart' as help;
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -34,7 +36,7 @@ class _HomeShellState extends State<HomeShell> {
     const MainPage(),
     ChatScreen(),
     HospitalLocatorPage(),
-    const HelpPage(),
+    const help.HelpAndSupportPage(),
   ];
   @override
   void initState() {
@@ -42,6 +44,16 @@ class _HomeShellState extends State<HomeShell> {
     _checkTermsAgreement();
   }
 
+Future<void> _launchEmail() async {
+  final Uri emailUri = Uri(
+    scheme: 'mailto',
+    path: 'support@example.com',
+    query: 'subject=App Support',
+  );
+  if (await canLaunchUrl(emailUri)) {
+    await launchUrl(emailUri);
+  }
+}
   Future<void> _checkTermsAgreement() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -366,7 +378,13 @@ class _MainDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.settings, color: Color(0xFF9AFF00)),
             title: Text(l10n.settings, style: const TextStyle(color: Colors.white, fontSize: 16)),
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
           ),
 
           ListTile(
@@ -522,47 +540,6 @@ class MainPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 60),
                     // Search Bar
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1A1A1A),
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: const Color(0xFF9AFF00).withOpacity(0.3),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF9AFF00).withOpacity(0.1),
-                            blurRadius: 10,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search,
-                            color: const Color(0xFF9AFF00).withOpacity(0.7),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Text(
-                              'What are your Concerns',
-                              style: TextStyle(
-                                color: Color(0xFF666666),
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -1068,14 +1045,3 @@ class ChatPage extends StatelessWidget {
 //     ),
 //   );
 // }
-
-class HelpPage extends StatelessWidget {
-  const HelpPage({super.key});
-  @override
-  Widget build(BuildContext context) => Container(
-    color: const Color(0xFF0A0A0A),
-    child: const Center(
-      child: Text('Help & Support', style: TextStyle(color: Colors.white)),
-    ),
-  );
-}
