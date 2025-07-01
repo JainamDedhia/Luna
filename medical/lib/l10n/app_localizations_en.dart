@@ -142,4 +142,113 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hosNearBY => 'Nearby Hospital';
+
+  @override
+  String get helpSupport => 'Help & Support';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get liveChat => 'Live Chat';
+
+  @override
+  String get callUs => 'Call Us';
+
+  @override
+  String get supportOptions => 'Support Options';
+
+  @override
+  String get faqTroubleshoot => 'FAQ & Troubleshooting';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
+  String get sendFeedback => 'Send Feedback';
+
+  @override
+  String get rateUrExp => 'Rate your experience';
+
+  @override
+  String get tellMore => 'Tell Us More';
+
+  @override
+  String get reportBug => 'Report a Bug';
+
+  @override
+  String get resources => 'Resources';
+
+  @override
+  String get userGuide => 'User Guide';
+
+  @override
+  String get videoTutorials => 'Video Tutorials';
+
+  @override
+  String get communityForum => 'Community Forum';
+
+  @override
+  String get immediateAssistance => 'Need immediate assistance?';
+
+  @override
+  String get responseTime => 'Average response time: 2-4 hours';
+
+  @override
+  String get supportHours => 'Support Hours: 9 AM - 6 PM EST';
+
+  @override
+  String get shareThoughtsHint => 'Share your thoughts, suggestions, or issues...';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String thankYouFeedback(Object rating) {
+    return 'Thank you for your $rating-star feedback!';
+  }
+
+  @override
+  String get reportBugTitle => 'Report a Bug';
+
+  @override
+  String get severity => 'Severity:';
+
+  @override
+  String get category => 'Category:';
+
+  @override
+  String get describeIssue => 'Describe the issue:';
+
+  @override
+  String get whatHappenedHint => 'What happened? Steps to reproduce?';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String bugReportSubmitted(Object ticketId) {
+    return 'Bug report submitted! Ticket #$ticketId';
+  }
+
+  @override
+  String get liveChatSoon => 'Live chat coming soon!';
+
+  @override
+  String get phoneCopied => 'Phone number copied to clipboard!';
+
+  @override
+  String get faqOpening => 'FAQ section opening...';
+
+  @override
+  String get userGuideOpening => 'User guide opening...';
+
+  @override
+  String get videoTutorialsOpening => 'Video tutorials opening...';
+
+  @override
+  String get communityOpening => 'Community forum opening...';
 }

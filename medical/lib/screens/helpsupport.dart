@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Import your theme constants
@@ -109,7 +110,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
   void _showFeedbackDialog() {
     final TextEditingController feedbackController = TextEditingController();
     int selectedRating = 5;
-
+    final l10n=AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -121,8 +122,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(color: neonGreen.withOpacity(0.3)),
               ),
-              title: const Text(
-                'Send Feedback',
+              title: Text(
+                l10n.sendFeedback,
                 style: TextStyle(color: neonGreen, fontWeight: FontWeight.bold),
               ),
               content: SizedBox(
@@ -131,8 +132,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Rate your experience:',
+                    Text(
+                      l10n.rateUrExp,
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(height: 12),
@@ -157,8 +158,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                       }),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Tell us more:',
+                    Text(
+                      l10n.tellMore,
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(height: 8),
@@ -167,7 +168,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                       maxLines: 4,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Share your thoughts, suggestions, or issues...',
+                        hintText: l10n.shareThoughtsHint,
                         hintStyle: TextStyle(color: subtitleGray),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -188,7 +189,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Cancel',
+                    l10n.cancel,
                     style: TextStyle(color: subtitleGray),
                   ),
                 ),
@@ -208,7 +209,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(l10n.submit, style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -371,11 +372,12 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: backgroundDark,
       appBar: AppBar(
         backgroundColor: backgroundMid,
-        title: const Text('Help & Support', style: TextStyle(color: neonGreen, fontWeight: FontWeight.bold)),
+        title: Text(l10n.helpSupport, style: TextStyle(color: neonGreen, fontWeight: FontWeight.bold)),
         centerTitle: true,
         iconTheme: const IconThemeData(color: neonGreen),
         elevation: 0,
@@ -431,13 +433,13 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               ),
 
               // Quick Actions Section
-              _sectionLabel('Quick Actions'),
+              _sectionLabel(l10n.quickActions),
               Row(
                 children: [
                   Expanded(
                     child: _quickActionCard(
                       icon: Icons.chat_bubble_outline,
-                      label: 'Live Chat',
+                      label: l10n.liveChat,
                       onTap: () => _showSnackBar(context, 'Live chat coming soon!'),
                     ),
                   ),
@@ -445,7 +447,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                   Expanded(
                     child: _quickActionCard(
                       icon: Icons.call,
-                      label: 'Call Us',
+                      label: l10n.callUs,
                       onTap: () => _copyToClipboard('+1-800-SUPPORT', 'Phone number'),
                     ),
                   ),
@@ -454,11 +456,11 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               const SizedBox(height: 24),
 
               // Support Options Section
-              _sectionLabel('Support Options'),
+              _sectionLabel(l10n.supportOptions),
               _supportTile(
                 context,
                 icon: Icons.help_outline,
-                title: 'FAQ & Troubleshooting',
+                title: l10n.faqTroubleshoot,
                 subtitle: 'Find answers to common questions',
                 badge: 'Popular',
                 onTap: () => _showSnackBar(context, 'FAQ section opening...'),
@@ -466,21 +468,21 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               _supportTile(
                 context,
                 icon: Icons.email_outlined,
-                title: 'Contact Support',
+                title: l10n.contactSupport,
                 subtitle: 'Get personalized help via email',
                 onTap: _launchEmail,
               ),
               _supportTile(
                 context,
                 icon: Icons.feedback_outlined,
-                title: 'Send Feedback',
+                title: l10n.sendFeedback,
                 subtitle: 'Help us improve your experience',
                 onTap: _showFeedbackDialog,
               ),
               _supportTile(
                 context,
                 icon: Icons.bug_report_outlined,
-                title: 'Report a Bug',
+                title: l10n.reportBug,
                 subtitle: 'Something not working correctly?',
                 onTap: _showBugReportDialog,
               ),
@@ -488,25 +490,25 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               const SizedBox(height: 24),
 
               // Resources Section
-              _sectionLabel('Resources'),
+              _sectionLabel(l10n.resources),
               _supportTile(
                 context,
                 icon: Icons.book_outlined,
-                title: 'User Guide',
+                title: l10n.userGuide,
                 subtitle: 'Complete documentation and tutorials',
                 onTap: () => _showSnackBar(context, 'User guide opening...'),
               ),
               _supportTile(
                 context,
                 icon: Icons.video_library_outlined,
-                title: 'Video Tutorials',
+                title: l10n.videoTutorials,
                 subtitle: 'Step-by-step video guides',
                 onTap: () => _showSnackBar(context, 'Video tutorials opening...'),
               ),
               _supportTile(
                 context,
                 icon: Icons.people_outline,
-                title: 'Community Forum',
+                title: l10n.communityForum,
                 subtitle: 'Connect with other users',
                 badge: 'New',
                 onTap: () => _showSnackBar(context, 'Community forum opening...'),
@@ -525,7 +527,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 child: Column(
                   children: [
                     Text(
-                      'Need immediate assistance?',
+                      l10n.immediateAssistance,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -534,7 +536,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Average response time: 2-4 hours',
+                      l10n.responseTime,
                       style: TextStyle(color: subtitleGray, fontSize: 14),
                     ),
                     const SizedBox(height: 12),
@@ -544,7 +546,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                         Icon(Icons.access_time, color: neonGreen, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          'Support Hours: 9 AM - 6 PM EST',
+                          l10n.supportHours,
                           style: TextStyle(color: subtitleGray, fontSize: 12),
                         ),
                       ],
