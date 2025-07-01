@@ -6,7 +6,7 @@ Luna is a multilingual, AI-powered mobile chatbot that delivers personalized Ayu
 
 ## 🚀 Demo
 
-[🔗 Watch the Demo](#) <!-- Replace with actual video link -->
+[🔗 Watch the Demo](https://www.youtube.com/watch?v=pu2gUP-MzuU) <!-- Replace with actual video link -->
 
 ---
 
