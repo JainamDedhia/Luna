@@ -142,4 +142,113 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get hosNearBY => 'आसपास के अस्पताल';
+
+  @override
+  String get helpSupport => 'सहायता और समर्थन';
+
+  @override
+  String get quickActions => 'त्वरित क्रियाएं';
+
+  @override
+  String get liveChat => 'सीधा चैट';
+
+  @override
+  String get callUs => 'हमें कॉल करें';
+
+  @override
+  String get supportOptions => 'सहायता विकल्प';
+
+  @override
+  String get faqTroubleshoot => 'सामान्य प्रश्न और समस्या समाधान';
+
+  @override
+  String get contactSupport => 'सहायता से संपर्क करें';
+
+  @override
+  String get sendFeedback => 'प्रतिक्रिया भेजें';
+
+  @override
+  String get rateUrExp => 'अपने अनुभव को रेट करें';
+
+  @override
+  String get tellMore => 'हमें और अधिक बताएँ:';
+
+  @override
+  String get reportBug => 'बग रिपोर्ट करें';
+
+  @override
+  String get resources => 'संसाधन';
+
+  @override
+  String get userGuide => 'उपयोगकर्ता मार्गदर्शिका';
+
+  @override
+  String get videoTutorials => 'वीडियो ट्यूटोरियल';
+
+  @override
+  String get communityForum => 'समुदाय मंच';
+
+  @override
+  String get immediateAssistance => 'तुरंत सहायता चाहिए?';
+
+  @override
+  String get responseTime => 'औसत प्रतिक्रिया समय: 2-4 घंटे';
+
+  @override
+  String get supportHours => 'सहायता समय: सुबह 9 से शाम 6 बजे';
+
+  @override
+  String get shareThoughtsHint => 'अपने विचार, सुझाव या समस्याएं साझा करें...';
+
+  @override
+  String get cancel => 'रद्द करें';
+
+  @override
+  String get submit => 'प्रस्तुत करें';
+
+  @override
+  String thankYouFeedback(Object rating) {
+    return 'आपके $rating-स्टार फीडबैक के लिए धन्यवाद!';
+  }
+
+  @override
+  String get reportBugTitle => 'बग रिपोर्ट करें';
+
+  @override
+  String get severity => 'गंभीरता:';
+
+  @override
+  String get category => 'श्रेणी:';
+
+  @override
+  String get describeIssue => 'समस्या का विवरण दें:';
+
+  @override
+  String get whatHappenedHint => 'क्या हुआ? पुनः निर्मित करने के चरण?';
+
+  @override
+  String get submitReport => 'रिपोर्ट सबमिट करें';
+
+  @override
+  String bugReportSubmitted(Object ticketId) {
+    return 'बग रिपोर्ट सबमिट की गई! टिकट #$ticketId';
+  }
+
+  @override
+  String get liveChatSoon => 'लाइव चैट जल्द ही आ रही है!';
+
+  @override
+  String get phoneCopied => 'फ़ोन नंबर क्लिपबोर्ड पर कॉपी हो गया!';
+
+  @override
+  String get faqOpening => 'सामान्य प्रश्न अनुभाग खोल रहा है...';
+
+  @override
+  String get userGuideOpening => 'यूज़र गाइड खोल रहा है...';
+
+  @override
+  String get videoTutorialsOpening => 'वीडियो ट्यूटोरियल खोल रहा है...';
+
+  @override
+  String get communityOpening => 'कम्युनिटी फोरम खोल रहा है...';
 }

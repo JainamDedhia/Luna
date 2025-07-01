@@ -8,10 +8,7 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations_en.dart';
 import 'app_localizations_gu.dart';
 import 'app_localizations_hi.dart';
-import 'app_localizations_ml.dart';
 import 'app_localizations_mr.dart';
-import 'app_localizations_ta.dart';
-import 'app_localizations_te.dart';
 
 // ignore_for_file: type=lint
 
@@ -99,10 +96,7 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('gu'),
     Locale('hi'),
-    Locale('ml'),
-    Locale('mr'),
-    Locale('ta'),
-    Locale('te')
+    Locale('mr')
   ];
 
   /// No description provided for @title.
@@ -374,6 +368,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nearby Hospital'**
   String get hosNearBY;
+
+  /// No description provided for @helpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupport;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @liveChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Chat'**
+  String get liveChat;
+
+  /// No description provided for @callUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Us'**
+  String get callUs;
+
+  /// No description provided for @supportOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Options'**
+  String get supportOptions;
+
+  /// No description provided for @faqTroubleshoot.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ & Troubleshooting'**
+  String get faqTroubleshoot;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupport;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get sendFeedback;
+
+  /// No description provided for @rateUrExp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your experience'**
+  String get rateUrExp;
+
+  /// No description provided for @tellMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Us More'**
+  String get tellMore;
+
+  /// No description provided for @reportBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Bug'**
+  String get reportBug;
+
+  /// No description provided for @resources.
+  ///
+  /// In en, this message translates to:
+  /// **'Resources'**
+  String get resources;
+
+  /// No description provided for @userGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'User Guide'**
+  String get userGuide;
+
+  /// No description provided for @videoTutorials.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Tutorials'**
+  String get videoTutorials;
+
+  /// No description provided for @communityForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Forum'**
+  String get communityForum;
+
+  /// No description provided for @immediateAssistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Need immediate assistance?'**
+  String get immediateAssistance;
+
+  /// No description provided for @responseTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Average response time: 2-4 hours'**
+  String get responseTime;
+
+  /// No description provided for @supportHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Hours: 9 AM - 6 PM EST'**
+  String get supportHours;
+
+  /// No description provided for @shareThoughtsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your thoughts, suggestions, or issues...'**
+  String get shareThoughtsHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @thankYouFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your {rating}-star feedback!'**
+  String thankYouFeedback(Object rating);
+
+  /// No description provided for @reportBugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Bug'**
+  String get reportBugTitle;
+
+  /// No description provided for @severity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity:'**
+  String get severity;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category:'**
+  String get category;
+
+  /// No description provided for @describeIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue:'**
+  String get describeIssue;
+
+  /// No description provided for @whatHappenedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened? Steps to reproduce?'**
+  String get whatHappenedHint;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @bugReportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug report submitted! Ticket #{ticketId}'**
+  String bugReportSubmitted(Object ticketId);
+
+  /// No description provided for @liveChatSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Live chat coming soon!'**
+  String get liveChatSoon;
+
+  /// No description provided for @phoneCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number copied to clipboard!'**
+  String get phoneCopied;
+
+  /// No description provided for @faqOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ section opening...'**
+  String get faqOpening;
+
+  /// No description provided for @userGuideOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'User guide opening...'**
+  String get userGuideOpening;
+
+  /// No description provided for @videoTutorialsOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Video tutorials opening...'**
+  String get videoTutorialsOpening;
+
+  /// No description provided for @communityOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Community forum opening...'**
+  String get communityOpening;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -385,7 +589,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'gu', 'hi', 'ml', 'mr', 'ta', 'te'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'gu', 'hi', 'mr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -399,10 +603,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'en': return AppLocalizationsEn();
     case 'gu': return AppLocalizationsGu();
     case 'hi': return AppLocalizationsHi();
-    case 'ml': return AppLocalizationsMl();
     case 'mr': return AppLocalizationsMr();
-    case 'ta': return AppLocalizationsTa();
-    case 'te': return AppLocalizationsTe();
   }
 
   throw FlutterError(
