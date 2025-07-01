@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_input_field.dart';
 import 'auth_screen.dart';
+import 'homeshell.dart'; // navigate after signup
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,10 +17,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  void handleSignUp() {
-    // For now, just show a message that it's a demo
+  bool isLoading = false;
+
+  void handleSignUp() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      showError('Please fill in all fields.');
+      return;
+    }
+
+    if (password != confirmPassword) {
+      showError('Passwords do not match.');
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Automatically navigates to HomeShell after successful sign-up
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeShell()),
+      );
+    } on FirebaseAuthException catch (e) {
+      showError(e.message ?? 'Sign up failed. Please try again.');
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sign-up functionality coming soon!')),
+      SnackBar(content: Text(message)),
     );
   }
 
@@ -36,17 +74,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     children: [
                       const SizedBox(height: 60),
-                      
-                      // Logo
-                      Image.asset(
-                        'assets/Luna.png',
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.contain,
-                      ),
+                      Image.asset('assets/Luna.png', width: 80, height: 80),
                       const SizedBox(height: 32),
-                      
-                      // Title
                       const Text(
                         "Sign Up For Free",
                         style: TextStyle(
@@ -56,8 +85,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      
-                      // Subtitle
                       const Text(
                         "Sign up in 1 minute for free!",
                         style: TextStyle(
@@ -67,21 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 48),
 
-                      // Email Label
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Email Address",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Email Input
+                      label("Email Address"),
                       AuthInputField(
                         controller: emailController,
                         hintText: "Enter your Email...",
@@ -89,21 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Password Label
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Password",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Password Input
+                      label("Password"),
                       AuthInputField(
                         controller: passwordController,
                         hintText: "Enter your password...",
@@ -112,21 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Password Confirmation Label
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Password Confirmation",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Password Confirmation Input
+                      label("Password Confirmation"),
                       AuthInputField(
                         controller: confirmPasswordController,
                         hintText: "Confirm your password...",
@@ -135,21 +120,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 32),
 
-                      // Sign Up Button
                       SizedBox(
                         width: double.infinity,
-                        child: AuthButton(
-                          label: "Sign Up",
-                          onPressed: handleSignUp,
-                        ),
+                        child: isLoading
+                            ? const Center(child: CircularProgressIndicator(color: Color(0xFF7ED321)))
+                            : AuthButton(
+                                label: "Sign Up",
+                                onPressed: handleSignUp,
+                              ),
                       ),
                       const SizedBox(height: 32),
                     ],
                   ),
                 ),
               ),
-              
-              // Bottom Sign in section
+
+              // Bottom text
               Padding(
                 padding: const EdgeInsets.only(bottom: 32),
                 child: Row(
@@ -165,9 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const AuthScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => const AuthScreen()),
                         );
                       },
                       child: const Text(
@@ -186,6 +170,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget label(String text) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
