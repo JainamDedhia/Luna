@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:medical/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../l10n/app_localizations.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final authService = AuthService();
 
     if (pickedFile != null) {
       setState(() {
@@ -61,8 +63,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Hailey Jons',
+          Text(
+            FirebaseAuth.instance.currentUser?.displayName ?? 'User',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
