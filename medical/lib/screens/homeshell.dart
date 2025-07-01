@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../locale_provider.dart';
 import 'package:medical/screens/helpsupport.dart' as help;
+import 'dart:math';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -44,16 +45,17 @@ class _HomeShellState extends State<HomeShell> {
     _checkTermsAgreement();
   }
 
-Future<void> _launchEmail() async {
-  final Uri emailUri = Uri(
-    scheme: 'mailto',
-    path: 'support@example.com',
-    query: 'subject=App Support',
-  );
-  if (await canLaunchUrl(emailUri)) {
-    await launchUrl(emailUri);
+  Future<void> _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'support@example.com',
+      query: 'subject=App Support',
+    );
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    }
   }
-}
+
   Future<void> _checkTermsAgreement() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -102,9 +104,9 @@ Future<void> _launchEmail() async {
   void _onNavTap(int newIdx) => setState(() => _index = newIdx);
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       drawer: const _MainDrawer(),
@@ -112,10 +114,11 @@ Widget build(BuildContext context) {
         elevation: 0,
         backgroundColor: const Color(0xFF0A0A0A),
         leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
+          builder:
+              (ctx) => IconButton(
+                icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
         ),
         actions: [
           Padding(
@@ -123,33 +126,33 @@ Widget build(BuildContext context) {
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
                 );
               },
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF9AFF00),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF9AFF00).withOpacity(0.3),
-                blurRadius: 8,
-                spreadRadius: 2,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF9AFF00),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF9AFF00).withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.account_circle_outlined,
+                  size: 24,
+                  color: Color(0xFF0A0A0A),
+                ),
               ),
-            ],
+            ),
           ),
-          child: const Icon(
-            Icons.account_circle_outlined,
-            size: 24,
-            color: Color(0xFF0A0A0A),
-          ),
-        ),
-      ),
-    ),
-  ],
+        ],
       ),
       body: _pages[_index],
       bottomNavigationBar: Container(
@@ -162,35 +165,38 @@ Widget build(BuildContext context) {
             ),
           ),
         ),
-      child:NavigationBar(
-        backgroundColor: const Color(0xFF0A0A0A),
+        child: NavigationBar(
+          backgroundColor: const Color(0xFF0A0A0A),
           selectedIndex: _index,
           onDestinationSelected: _onNavTap,
           indicatorColor: const Color(0xFF9AFF00).withOpacity(0.2),
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined), 
-            selectedIcon: Icon(Icons.home, color: Color(0xFF9AFF00)),
-            label: l10n.home
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.chat_bubble_outline), 
-            selectedIcon: Icon(Icons.chat, color: Color(0xFF9AFF00)),
-            label: l10n.chatPage // You might want to add this to your ARB files
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.place_outlined), 
-            selectedIcon: Icon(Icons.place, color: Color(0xFF9AFF00)),
-            label: l10n.mapPage // You might want to add this to your ARB files
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.call_outlined), 
-            selectedIcon: Icon(Icons.call, color: Color(0xFF9AFF00)),
-            label: l10n.helpPage // You might want to add this to your ARB files
-          ),
-        ],
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home, color: Color(0xFF9AFF00)),
+              label: l10n.home,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.chat_bubble_outline),
+              selectedIcon: Icon(Icons.chat, color: Color(0xFF9AFF00)),
+              label:
+                  l10n.chatPage, // You might want to add this to your ARB files
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.place_outlined),
+              selectedIcon: Icon(Icons.place, color: Color(0xFF9AFF00)),
+              label:
+                  l10n.mapPage, // You might want to add this to your ARB files
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.call_outlined),
+              selectedIcon: Icon(Icons.call, color: Color(0xFF9AFF00)),
+              label:
+                  l10n.helpPage, // You might want to add this to your ARB files
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 }
@@ -200,105 +206,117 @@ Widget build(BuildContext context) {
 /// ─────────────────────────
 class _MainDrawer extends StatelessWidget {
   const _MainDrawer();
-  
 
   //Mit Code
   void _showLanguageDialog(BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(l10n.changeLanguage),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _LanguageTile(
-              title: 'English',
-              flag: '🇺🇸',
-              locale: const Locale('en'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('en'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'हिंदी',
-              flag: '🇮🇳',
-              locale: const Locale('hi'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('hi'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'ગુજરાતી',
-              flag: '🇮🇳',
-              locale: const Locale('gu'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('gu'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'मराठी',
-              flag: '🇮🇳',
-              locale: const Locale('mr'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('mr'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'Tamil',
-              flag: '🇮🇳',
-              locale: const Locale('ta'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('ta'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'Telgu',
-              flag: '🇮🇳',
-              locale: const Locale('te'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('te'));
-                Navigator.pop(context);
-              },
-            ),
-            _LanguageTile(
-              title: 'Malayayam',
-              flag: '🇮🇳',
-              locale: const Locale('ml'),
-              onTap: () {
-                Provider.of<LocaleProvider>(context, listen: false)
-                    .setLocale(const Locale('ml'));
-                Navigator.pop(context);
-              },
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(l10n.changeLanguage),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _LanguageTile(
+                title: 'English',
+                flag: '🇺🇸',
+                locale: const Locale('en'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('en'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'हिंदी',
+                flag: '🇮🇳',
+                locale: const Locale('hi'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('hi'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'ગુજરાતી',
+                flag: '🇮🇳',
+                locale: const Locale('gu'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('gu'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'मराठी',
+                flag: '🇮🇳',
+                locale: const Locale('mr'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('mr'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'Tamil',
+                flag: '🇮🇳',
+                locale: const Locale('ta'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('ta'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'Telgu',
+                flag: '🇮🇳',
+                locale: const Locale('te'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('te'));
+                  Navigator.pop(context);
+                },
+              ),
+              _LanguageTile(
+                title: 'Malayayam',
+                flag: '🇮🇳',
+                locale: const Locale('ml'),
+                onTap: () {
+                  Provider.of<LocaleProvider>(
+                    context,
+                    listen: false,
+                  ).setLocale(const Locale('ml'));
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('cancel'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('cancel'),
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   //mit code end here
-
 
   @override
   Widget build(BuildContext context) {
@@ -336,7 +354,7 @@ class _MainDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  l10n.title,//una menu
+                  l10n.title, //una menu
                   style: TextStyle(
                     color: Color(0xFF9AFF00),
                     fontSize: 24,
@@ -348,24 +366,38 @@ class _MainDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home, color: Color(0xFF9AFF00)),
-            title: Text(l10n.home, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(
+              l10n.home,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () => Navigator.pop(context),
           ),
 
           ListTile(
             leading: const Icon(Icons.school, color: Color(0xFF9AFF00)),
-            title: Text(l10n.educationalLessons, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(
+              l10n.educationalLessons,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const EducationalLessonsPage()),
+                MaterialPageRoute(
+                  builder: (_) => const EducationalLessonsPage(),
+                ),
               );
             },
           ),
 
           ListTile(
-            leading: const Icon(Icons.question_answer_outlined, color: Color(0xFF9AFF00)),
-            title: Text(l10n.faq, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            leading: const Icon(
+              Icons.question_answer_outlined,
+              color: Color(0xFF9AFF00),
+            ),
+            title: Text(
+              l10n.faq,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -377,7 +409,10 @@ class _MainDrawer extends StatelessWidget {
 
           ListTile(
             leading: const Icon(Icons.settings, color: Color(0xFF9AFF00)),
-            title: Text(l10n.settings, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(
+              l10n.settings,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -389,7 +424,10 @@ class _MainDrawer extends StatelessWidget {
 
           ListTile(
             leading: const Icon(Icons.logout, color: Color(0xFF9AFF00)),
-            title: Text(l10n.signOut, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(
+              l10n.signOut,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               parentState?.handleSignOut(context);
@@ -398,7 +436,10 @@ class _MainDrawer extends StatelessWidget {
 
           ListTile(
             leading: const Icon(Icons.language, color: Color(0xFF9AFF00)),
-            title: Text(l10n.changeLanguage, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(
+              l10n.changeLanguage,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               Future.delayed(const Duration(milliseconds: 100), () {
@@ -406,7 +447,6 @@ class _MainDrawer extends StatelessWidget {
               });
             },
           ),
-
         ],
       ),
     );
@@ -453,6 +493,7 @@ class _LanguageTile extends StatelessWidget {
 /// ─────────────────────────
 /// Page 1 – Home
 /// ─────────────────────────
+
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
 
@@ -466,89 +507,221 @@ class MainPage extends StatelessWidget {
           colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
         ),
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              const LocationBar(),
-              const SizedBox(height: 60),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Luna Logo/Title with glow effect
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Column(
-                        children: [
-                          // Animated glow circle
-                          Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  const Color(0xFF9AFF00).withOpacity(0.3),
-                                  const Color(0xFF9AFF00).withOpacity(0.1),
-                                  Colors.transparent,
-                                ],
+      child: Stack(
+        children: [
+          // Background pattern
+          Positioned.fill(
+            child: CustomPaint(painter: BackgroundPatternPainter()),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const LocationBar(),
+                  const SizedBox(height: 40),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        // Luna Logo/Title with glow effect
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            children: [
+                              // Luna text moved above logo with better font
+                              const Text(
+                                'Luna',
+                                style: TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9AFF00),
+                                  letterSpacing: 3,
+                                  fontFamily: 'Roboto',
+                                ),
                               ),
-                            ),
-                            child: Center(
-                              child: Container(
-                                width: 120,
-                                height: 120,
+                              const SizedBox(height: 12),
+                              // Animated glow circle - made slightly smaller
+                              Container(
+                                width: 240,
+                                height: 240,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFF9AFF00),
-                                    width: 2,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      const Color(0xFF9AFF00).withOpacity(0.3),
+                                      const Color(0xFF9AFF00).withOpacity(0.1),
+                                      Colors.transparent,
+                                    ],
                                   ),
                                 ),
-                                child: Image.asset(
-                                  'assets/Luna.png',
-                                  height: 64,
-                                  width: 64,
+                                child: Center(
+                                  child: Container(
+                                    width: 160,
+                                    height: 160,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFF9AFF00),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Image.asset(
+                                      'assets/Luna.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 24),
-                          const Text(
-                            'Luna',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w300,
-                              color: Color(0xFF9AFF00),
-                              letterSpacing: 2,
-                            ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Subtitle
+                        const Text(
+                          'Feeling Unwell or Just Curious',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF888888),
+                            fontStyle: FontStyle.italic,
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Health remedy box - brought up and made more compact
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 30),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A1A1A).withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFF9AFF00).withOpacity(0.4),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF9AFF00).withOpacity(0.1),
+                                blurRadius: 8,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Search Bar
+                      ],
                     ),
-                    const SizedBox(height: 40),
-                    // Subtitle
-                    const Text(
-                      'Feeling Unwell or Just Curious',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF888888),
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                    // Search Bar
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+// Custom painter for modern background pattern
+class BackgroundPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Create subtle geometric shapes and dots
+    final paint =
+        Paint()
+          ..color = const Color(0xFF9AFF00).withOpacity(0.03)
+          ..style = PaintingStyle.fill;
+
+    final strokePaint =
+        Paint()
+          ..color = const Color(0xFF9AFF00).withOpacity(0.05)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke;
+
+    // Draw floating circles
+    final random = [0.2, 0.7, 0.3, 0.8, 0.1, 0.9, 0.4, 0.6];
+    for (int i = 0; i < 8; i++) {
+      final x = size.width * random[i];
+      final y = size.height * random[(i + 2) % 8];
+      final radius = 20 + (i * 10);
+
+      canvas.drawCircle(Offset(x, y), radius.toDouble(), paint);
+    }
+
+    // Draw subtle wave patterns
+    final path = Path();
+    path.moveTo(0, size.height * 0.2);
+
+    for (double x = 0; x <= size.width; x += 50) {
+      final y = size.height * 0.2 + (sin(x / 100) * 30) + (sin(x / 200) * 20);
+      path.lineTo(x, y);
+    }
+    canvas.drawPath(path, strokePaint);
+
+    // Another wave at different position
+    final path2 = Path();
+    path2.moveTo(0, size.height * 0.8);
+
+    for (double x = 0; x <= size.width; x += 50) {
+      final y =
+          size.height * 0.8 +
+          (sin((x + 100) / 120) * 25) +
+          (sin((x + 200) / 180) * 15);
+      path2.lineTo(x, y);
+    }
+    canvas.drawPath(path2, strokePaint);
+
+    // Add some hexagonal shapes
+    final hexPaint =
+        Paint()
+          ..color = const Color(0xFF9AFF00).withOpacity(0.02)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1;
+
+    // Draw a few hexagons
+    drawHexagon(
+      canvas,
+      hexPaint,
+      Offset(size.width * 0.1, size.height * 0.3),
+      25,
+    );
+    drawHexagon(
+      canvas,
+      hexPaint,
+      Offset(size.width * 0.9, size.height * 0.7),
+      30,
+    );
+    drawHexagon(
+      canvas,
+      hexPaint,
+      Offset(size.width * 0.7, size.height * 0.1),
+      20,
+    );
+  }
+
+  void drawHexagon(Canvas canvas, Paint paint, Offset center, double radius) {
+    final path = Path();
+    for (int i = 0; i < 6; i++) {
+      final angle = (i * 60) * (pi / 180);
+      final x = center.dx + radius * cos(angle);
+      final y = center.dy + radius * sin(angle);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// Location Bar Widget
@@ -863,7 +1036,7 @@ class _LocationBarState extends State<LocationBar> {
   }
 
   Future<void> _refreshLocation() async {
-    final l10n =AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _busy = true;
       _remedy = '';
