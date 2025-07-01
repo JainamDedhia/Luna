@@ -1,83 +1,87 @@
-🌙 Luna – Your Ayurvedic Health Companion
-Luna is a multilingual, AI-powered mobile chatbot that delivers personalized Ayurvedic health guidance — instantly and in your local language. Designed with rural and underserved communities in mind, Luna helps users find reliable remedies, get weather-based wellness tips, and connect to nearby healthcare resources when access is limited.
+# 🌙 Luna – Your Ayurvedic Health Companion
 
-🚀 Demo
-🎥 [Include link to demo video here]
+Luna is a multilingual, AI-powered mobile chatbot that delivers personalized Ayurvedic health guidance — instantly and in your local language. Designed for rural and underserved communities, Luna provides quick remedies, wellness tips, and access to nearby healthcare resources, even in low-connectivity environments.
 
-🧠 Features
-🤖 Chatbot for Ayurvedic Remedies – Type or speak symptoms, get instant home remedies with preparation instructions.
+---
 
-🌐 Multilingual Support – Interface and responses available in multiple Indian languages.
+## 🚀 Demo
 
-🌦️ Weather-Based Wellness Tips – Get health suggestions tailored to local weather.
+[🔗 Watch the Demo](#) <!-- Replace with actual video link -->
 
-🏥 Nearby Hospitals – Quick access to a list of nearby hospitals using geolocation.
+---
 
-📚 Educational Content – Learn more about Ayurvedic practices through short, simple lessons.
+## ✨ Features
 
-❓ FAQs & Help Page – Navigate the app easily and get help when needed.
+- 🤖 **AI Chatbot** – Get instant Ayurvedic remedies by typing or speaking symptoms
+- 🌐 **Multilingual Interface** – Support for regional Indian languages
+- 🌦️ **Weather-Based Tips** – Health advice based on local weather
+- 🏥 **Nearby Hospitals** – Find nearby medical centers using geolocation
+- 📚 **Educational Lessons** – Learn simple Ayurvedic practices
+- ❓ **FAQ & Help Page** – User guidance and troubleshooting support
+- 🔐 **Google Sign-In** – Quick and secure authentication
 
-🔐 Google Sign-In – Fast, secure onboarding experience.
+---
 
-🌍 Offline-Ready and Lightweight – Designed for users in low-connectivity environments.
+## 🛠️ Built With
 
-📱 Screenshots
-(Add relevant screenshots here in a grid or carousel)
+- Flutter  
+- Dart  
+- Firebase  
+- Firestore  
+- Python  
+- LangChain  
+- Google Sign-In  
+- Geolocation API  
+- Weather API  
+- Custom Ayurvedic Dataset  
+- Localization  
 
-⚙️ Built With
-Flutter
-Dart
-Firebase
-Firestore
-Python
-LangChain
-Google Sign-In
-Geolocation API
-Weather API
-Custom Ayurvedic Dataset
-Localization
+---
 
-💡 Inspiration
-Millions of people in rural India face limited access to healthcare and trustworthy medical advice. At the same time, there’s growing interest in natural, side-effect-free healing — like Ayurveda — yet verified guidance is hard to find in local languages. Luna was built to close that gap.
+## 💡 Inspiration
 
-🛠️ How It Works
-Users sign up or log in via Google.
+Millions in rural India lack access to timely, reliable healthcare. At the same time, Ayurveda offers a natural and culturally trusted healing system — but it’s often inaccessible or unstructured. Luna bridges that gap by delivering personalized Ayurvedic guidance right to the user’s phone — in their own language.
 
-They select their preferred language.
+---
 
-Users enter symptoms via text or voice.
+## ⚙️ How It Works
 
-Luna provides Ayurvedic remedies instantly, along with contextual advice.
+1. User signs up via Google or email
+2. Selects preferred language
+3. Types or speaks a symptom
+4. Luna responds with verified Ayurvedic remedies
+5. Additional tools like hospital finder, lessons, and FAQs enhance the experience
 
-Additional tools like hospital locators, FAQs, and lessons support a holistic user experience.
+---
 
-🤯 Challenges We Faced
-Training the AI to understand natural symptom descriptions across languages.
+## 🚧 Challenges
 
-Structuring and validating Ayurvedic data for safe, contextual use.
+- Training a multilingual symptom-based AI model
+- Curating and validating Ayurvedic remedy data
+- Building for low-end devices and offline accessibility
+- Designing a simple UI while supporting multiple features
 
-Keeping the app fast and lightweight for low-end devices and poor connectivity zones.
+---
 
-Balancing a simple UI with multi-feature functionality.
+## 🚀 Future Plans
 
-🌈 What's Next
-Expand language support to more regional dialects.
+- Add more regional languages and dialects
+- Enable voice output for full hands-free experience
+- Integrate live chat with certified Ayurvedic doctors
+- Improve offline caching and local data support
 
-Add voice output for full hands-free experience.
+---
 
-Integrate teleconsultation with certified Ayurvedic doctors.
+## 👨‍💻 Team Luna
 
-Enhance offline functionality with local caching.
+- Jainam  
+- Tirth  
+- Yagnik  
+- Mit  
 
-🧑‍💻 Team Luna
-Jainam
+---
 
-Tirth
+## 📄 License
 
-Yagnik
-
-Mit
-
-📄 License
-MIT
+[MIT License](LICENSE)
 
