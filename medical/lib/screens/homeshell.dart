@@ -23,6 +23,17 @@ import '../locale_provider.dart';
 import 'package:medical/screens/helpsupport.dart' as help;
 import 'dart:math';
 
+class RemedyProvider extends ChangeNotifier {
+  String _remedy = '';
+  
+  String get remedy => _remedy;
+  
+  void setRemedy(String remedy) {
+    _remedy = remedy;
+    notifyListeners();
+  }
+}
+
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -590,28 +601,57 @@ class MainPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         // Health remedy box - brought up and made more compact
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          margin: const EdgeInsets.symmetric(horizontal: 30),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1A1A1A).withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF9AFF00).withOpacity(0.4),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF9AFF00).withOpacity(0.1),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
+                        Consumer<RemedyProvider>(
+  builder: (context, remedyProvider, child) {
+    if (remedyProvider.remedy.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A).withOpacity(0.8),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xFF9AFF00).withOpacity(0.4),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9AFF00).withOpacity(0.1),
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.lightbulb_outline,
+              color: Color(0xFF9AFF00),
+              size: 20,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                remedyProvider.remedy,
+                style: const TextStyle(
+                  color: Color(0xFF9AFF00),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox.shrink();
+  },
+)
                         // Search Bar
                       ],
                     ),
@@ -1113,7 +1153,7 @@ class _LocationBarState extends State<LocationBar> {
 
         final remedies = _remedyMap[condition] ?? _remedyMap['default']!;
         remedies.shuffle(); // shuffle for new remedy on every app open
-        setState(() => _remedy = remedies.first);
+        Provider.of<RemedyProvider>(context, listen: false).setRemedy(remedies.first);
       } else {
         setState(() => _remedy = '⚠️ Weather info unavailable.');
       }
@@ -1176,19 +1216,6 @@ class _LocationBarState extends State<LocationBar> {
             ],
           ),
         ),
-        if (_remedy.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Text(
-              _remedy,
-              style: const TextStyle(
-                color: Color(0xFF9AFF00),
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
       ],
     );
   }

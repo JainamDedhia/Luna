@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// Import auth logic
-import 'services/auth_service.dart';
-import 'screens/auth_screen.dart';// Import auth UI
-// import 'screens/homeshell.dart';
-
-//mit
 import 'package:provider/provider.dart';
+
+// Import services and screens
+import 'services/auth_service.dart';
+import 'screens/auth_screen.dart';
 import 'locale_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:medical/screens/homeshell.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(ChangeNotifierProvider(
-      create: (_) => LocaleProvider(),
+  
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => RemedyProvider()), // <-- Added
+      ],
       child: const MyApp(),
-    ),);
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,14 +29,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return Consumer<LocaleProvider>(
+    return Consumer<LocaleProvider>(
       builder: (context, localeProvider, child) {
-    return MaterialApp(
-      title: 'Medical App - Auth',
-      theme: ThemeData(primarySwatch: Colors.blueGrey),
-      debugShowCheckedModeBanner: false,
-      locale: localeProvider.locale,
-      supportedLocales: const [
+        return MaterialApp(
+          title: 'Medical App - Auth',
+          theme: ThemeData(primarySwatch: Colors.blueGrey),
+          debugShowCheckedModeBanner: false,
+          locale: localeProvider.locale,
+          supportedLocales: const [
             Locale('en'),
             Locale('hi'),
             Locale('gu'),
@@ -47,9 +51,9 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-        home: const AuthScreen(),
-      );
-    }
+          home: const AuthScreen(),
+        );
+      },
     );
   }
 }
