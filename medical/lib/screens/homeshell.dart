@@ -22,12 +22,14 @@ import '../l10n/app_localizations.dart';
 import '../locale_provider.dart';
 import 'package:medical/screens/helpsupport.dart' as help;
 import 'dart:math';
+// Import the ads popup page
+import 'package:medical/screens/ads_popup_page.dart';
 
 class RemedyProvider extends ChangeNotifier {
   String _remedy = '';
-  
+
   String get remedy => _remedy;
-  
+
   void setRemedy(String remedy) {
     _remedy = remedy;
     notifyListeners();
@@ -50,10 +52,41 @@ class _HomeShellState extends State<HomeShell> {
     HospitalLocatorPage(),
     const help.HelpAndSupportPage(),
   ];
+
   @override
   void initState() {
     super.initState();
-    _checkTermsAgreement();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Check if user is authenticated first
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    // Small delay to ensure the widget tree is built
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Check and show ads popup first
+    await _checkAndShowAdsPopup();
+
+    // Then check terms agreement
+    await _checkTermsAgreement();
+  }
+
+  Future<void> _checkAndShowAdsPopup() async {
+    if (!mounted) return;
+
+    final shouldShow = await AdsPopupHelper.shouldShowAdsPopup();
+    if (shouldShow) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          AdsPopupHelper.showAdsPopup(context);
+        }
+      });
+    }
   }
 
   Future<void> _launchEmail() async {
@@ -80,19 +113,24 @@ class _HomeShellState extends State<HomeShell> {
     final agreed = prefs.getBool(key) ?? false;
 
     if (!agreed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder:
-              (_) => TermsConditionsPage(
-                onAgree: () async {
-                  await prefs.setBool(key, true);
-                  Navigator.of(context).pop();
-                },
-              ),
-        );
-      });
+      // Add a delay to ensure ads popup is shown first
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder:
+                (_) => TermsConditionsPage(
+                  onAgree: () async {
+                    await prefs.setBool(key, true);
+                    Navigator.of(context).pop();
+                  },
+                ),
+          );
+        });
+      }
     }
   }
 
@@ -278,42 +316,6 @@ class _MainDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
-              _LanguageTile(
-                title: 'Tamil',
-                flag: '🇮🇳',
-                locale: const Locale('ta'),
-                onTap: () {
-                  Provider.of<LocaleProvider>(
-                    context,
-                    listen: false,
-                  ).setLocale(const Locale('ta'));
-                  Navigator.pop(context);
-                },
-              ),
-              _LanguageTile(
-                title: 'Telgu',
-                flag: '🇮🇳',
-                locale: const Locale('te'),
-                onTap: () {
-                  Provider.of<LocaleProvider>(
-                    context,
-                    listen: false,
-                  ).setLocale(const Locale('te'));
-                  Navigator.pop(context);
-                },
-              ),
-              _LanguageTile(
-                title: 'Malayayam',
-                flag: '🇮🇳',
-                locale: const Locale('ml'),
-                onTap: () {
-                  Provider.of<LocaleProvider>(
-                    context,
-                    listen: false,
-                  ).setLocale(const Locale('ml'));
-                  Navigator.pop(context);
-                },
-              ),
             ],
           ),
           actions: [
@@ -365,7 +367,7 @@ class _MainDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  l10n.title, //una menu
+                  l10n.title, //Luna menu
                   style: TextStyle(
                     color: Color(0xFF9AFF00),
                     fontSize: 24,
@@ -602,56 +604,64 @@ class MainPage extends StatelessWidget {
                         const SizedBox(height: 20),
                         // Health remedy box - brought up and made more compact
                         Consumer<RemedyProvider>(
-  builder: (context, remedyProvider, child) {
-    if (remedyProvider.remedy.isNotEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A).withOpacity(0.8),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: const Color(0xFF9AFF00).withOpacity(0.4),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF9AFF00).withOpacity(0.1),
-              blurRadius: 8,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.lightbulb_outline,
-              color: Color(0xFF9AFF00),
-              size: 20,
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                remedyProvider.remedy,
-                style: const TextStyle(
-                  color: Color(0xFF9AFF00),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    return SizedBox.shrink();
-  },
-)
+                          builder: (context, remedyProvider, child) {
+                            if (remedyProvider.remedy.isNotEmpty) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF1A1A1A,
+                                  ).withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFF9AFF00,
+                                    ).withOpacity(0.4),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF9AFF00,
+                                      ).withOpacity(0.1),
+                                      blurRadius: 8,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.lightbulb_outline,
+                                      color: Color(0xFF9AFF00),
+                                      size: 20,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        remedyProvider.remedy,
+                                        style: const TextStyle(
+                                          color: Color(0xFF9AFF00),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.4,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return SizedBox.shrink();
+                          },
+                        ),
                         // Search Bar
                       ],
                     ),
@@ -1153,7 +1163,10 @@ class _LocationBarState extends State<LocationBar> {
 
         final remedies = _remedyMap[condition] ?? _remedyMap['default']!;
         remedies.shuffle(); // shuffle for new remedy on every app open
-        Provider.of<RemedyProvider>(context, listen: false).setRemedy(remedies.first);
+        Provider.of<RemedyProvider>(
+          context,
+          listen: false,
+        ).setRemedy(remedies.first);
       } else {
         setState(() => _remedy = '⚠️ Weather info unavailable.');
       }
