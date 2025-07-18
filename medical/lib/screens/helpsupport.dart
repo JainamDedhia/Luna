@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-// Import your theme constants
-const Color backgroundDark = Color(0xFF0A0A0A);
-const Color backgroundMid = Color(0xFF1A1A1A);
-const Color neonGreen = Color(0xFF9AFF00);
-const Color subtitleGray = Color(0xFF888888);
-const Color cardBackground = Color(0xFF252525);
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/animated_button.dart';
 
 class HelpAndSupportPage extends StatefulWidget {
   const HelpAndSupportPage({super.key});
@@ -373,13 +370,18 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
   @override
   Widget build(BuildContext context) {
     final l10n=AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Scaffold(
-      backgroundColor: backgroundDark,
+      backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
-        backgroundColor: backgroundMid,
-        title: Text(l10n.helpSupport, style: TextStyle(color: neonGreen, fontWeight: FontWeight.bold)),
+        backgroundColor: themeProvider.surfaceColor,
+        title: Text(
+          l10n.helpSupport, 
+          style: TextStyle(color: themeProvider.primaryColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
-        iconTheme: const IconThemeData(color: neonGreen),
+        iconTheme: IconThemeData(color: themeProvider.primaryColor),
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
@@ -391,32 +393,19 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
             padding: const EdgeInsets.all(20),
             children: [
               // Welcome Section
-              Container(
+              AnimatedCard(
                 padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      neonGreen.withOpacity(0.1),
-                      neonGreen.withOpacity(0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: neonGreen.withOpacity(0.3)),
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.support_agent, color: neonGreen, size: 28),
+                        Icon(Icons.support_agent, color: themeProvider.primaryColor, size: 28),
                         const SizedBox(width: 12),
-                        const Text(
+                        Text(
                           'We\'re here to help!',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: themeProvider.textColor,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -426,20 +415,21 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                     const SizedBox(height: 8),
                     Text(
                       'Get quick answers to your questions or reach out to our support team.',
-                      style: TextStyle(color: subtitleGray, fontSize: 16),
+                      style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 16),
                     ),
                   ],
                 ),
               ),
 
               // Quick Actions Section
-              _sectionLabel(l10n.quickActions),
+              _sectionLabel(l10n.quickActions, themeProvider),
               Row(
                 children: [
                   Expanded(
                     child: _quickActionCard(
                       icon: Icons.chat_bubble_outline,
                       label: l10n.liveChat,
+                      themeProvider: themeProvider,
                       onTap: () => _showSnackBar(context, 'Live chat coming soon!'),
                     ),
                   ),
@@ -448,6 +438,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                     child: _quickActionCard(
                       icon: Icons.call,
                       label: l10n.callUs,
+                      themeProvider: themeProvider,
                       onTap: () => _copyToClipboard('+1-800-SUPPORT', 'Phone number'),
                     ),
                   ),
@@ -456,13 +447,14 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               const SizedBox(height: 24),
 
               // Support Options Section
-              _sectionLabel(l10n.supportOptions),
+              _sectionLabel(l10n.supportOptions, themeProvider),
               _supportTile(
                 context,
                 icon: Icons.help_outline,
                 title: l10n.faqTroubleshoot,
                 subtitle: 'Find answers to common questions',
                 badge: 'Popular',
+                themeProvider: themeProvider,
                 onTap: () => _showSnackBar(context, 'FAQ section opening...'),
               ),
               _supportTile(
@@ -470,6 +462,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 icon: Icons.email_outlined,
                 title: l10n.contactSupport,
                 subtitle: 'Get personalized help via email',
+                themeProvider: themeProvider,
                 onTap: _launchEmail,
               ),
               _supportTile(
@@ -477,6 +470,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 icon: Icons.feedback_outlined,
                 title: l10n.sendFeedback,
                 subtitle: 'Help us improve your experience',
+                themeProvider: themeProvider,
                 onTap: _showFeedbackDialog,
               ),
               _supportTile(
@@ -484,18 +478,20 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 icon: Icons.bug_report_outlined,
                 title: l10n.reportBug,
                 subtitle: 'Something not working correctly?',
+                themeProvider: themeProvider,
                 onTap: _showBugReportDialog,
               ),
 
               const SizedBox(height: 24),
 
               // Resources Section
-              _sectionLabel(l10n.resources),
+              _sectionLabel(l10n.resources, themeProvider),
               _supportTile(
                 context,
                 icon: Icons.book_outlined,
                 title: l10n.userGuide,
                 subtitle: 'Complete documentation and tutorials',
+                themeProvider: themeProvider,
                 onTap: () => _showSnackBar(context, 'User guide opening...'),
               ),
               _supportTile(
@@ -503,6 +499,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 icon: Icons.video_library_outlined,
                 title: l10n.videoTutorials,
                 subtitle: 'Step-by-step video guides',
+                themeProvider: themeProvider,
                 onTap: () => _showSnackBar(context, 'Video tutorials opening...'),
               ),
               _supportTile(
@@ -511,25 +508,21 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 title: l10n.communityForum,
                 subtitle: 'Connect with other users',
                 badge: 'New',
+                themeProvider: themeProvider,
                 onTap: () => _showSnackBar(context, 'Community forum opening...'),
               ),
 
               const SizedBox(height: 32),
 
               // Contact Info Footer
-              Container(
+              AnimatedCard(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardBackground,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: neonGreen.withOpacity(0.2)),
-                ),
                 child: Column(
                   children: [
                     Text(
                       l10n.immediateAssistance,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: themeProvider.textColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -537,17 +530,17 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                     const SizedBox(height: 8),
                     Text(
                       l10n.responseTime,
-                      style: TextStyle(color: subtitleGray, fontSize: 14),
+                      style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 14),
                     ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.access_time, color: neonGreen, size: 16),
+                        Icon(Icons.access_time, color: themeProvider.primaryColor, size: 16),
                         const SizedBox(width: 4),
                         Text(
                           l10n.supportHours,
-                          style: TextStyle(color: subtitleGray, fontSize: 12),
+                          style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 12),
                         ),
                       ],
                     ),
@@ -561,13 +554,13 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     );
   }
 
-  Widget _sectionLabel(String text) {
+  Widget _sectionLabel(String text, ThemeProvider themeProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16, top: 8),
       child: Text(
         text,
         style: const TextStyle(
-          color: neonGreen,
+          color: themeProvider.primaryColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -578,32 +571,26 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
   Widget _quickActionCard({
     required IconData icon,
     required String label,
+    required ThemeProvider themeProvider,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return AnimatedCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardBackground,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: neonGreen.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: neonGreen, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Icon(icon, color: themeProvider.primaryColor, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: themeProvider.textColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -613,40 +600,29 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     required IconData icon,
     required String title,
     required String subtitle,
+    required ThemeProvider themeProvider,
     required VoidCallback onTap,
     String? badge,
   }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundMid,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: neonGreen.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: neonGreen.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return AnimatedCard(
+      onTap: onTap,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: neonGreen.withOpacity(0.1),
+            color: themeProvider.primaryColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: neonGreen, size: 24),
+          child: Icon(icon, color: themeProvider.primaryColor, size: 24),
         ),
         title: Row(
           children: [
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: themeProvider.textColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -656,13 +632,13 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: neonGreen,
+                  color: themeProvider.primaryColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   badge,
-                  style: const TextStyle(
-                    color: backgroundDark,
+                  style: TextStyle(
+                    color: themeProvider.backgroundColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -672,14 +648,13 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
         ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(color: subtitleGray, fontSize: 14),
+          style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 14),
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color: neonGreen.withOpacity(0.7),
+          color: themeProvider.primaryColor.withOpacity(0.7),
           size: 24,
         ),
-        onTap: onTap,
       ),
     );
   }

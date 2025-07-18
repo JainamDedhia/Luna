@@ -24,6 +24,10 @@ import 'package:medical/screens/helpsupport.dart' as help;
 import 'dart:math';
 // Import the ads popup page
 import 'package:medical/screens/ads_popup_page.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_background.dart';
+import '../widgets/theme_toggle_button.dart';
+import '../widgets/animated_card.dart';
 
 class RemedyProvider extends ChangeNotifier {
   String _remedy = '';
@@ -155,95 +159,130 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
-      drawer: const _MainDrawer(),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFF0A0A0A),
-        leading: Builder(
-          builder:
-              (ctx) => IconButton(
-                icon: const Icon(Icons.menu, color: Color(0xFF9AFF00)),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 14),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                );
-              },
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF9AFF00),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF9AFF00).withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 2,
+    return AnimatedBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        drawer: const _MainDrawer(),
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: Builder(
+            builder:
+                (ctx) => IconButton(
+                  icon: Icon(Icons.menu, color: themeProvider.primaryColor),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+          ),
+          actions: [
+            // Theme toggle button
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: const ThemeToggleButton(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const ProfilePage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1.0, 0.0),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          )),
+                          child: child,
+                        );
+                      },
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.account_circle_outlined,
-                  size: 24,
-                  color: Color(0xFF0A0A0A),
+                  );
+                },
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: themeProvider.primaryColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: themeProvider.primaryColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.account_circle_outlined,
+                    size: 24,
+                    color: themeProvider.backgroundColor,
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-      body: _pages[_index],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF0A0A0A),
-          border: Border(
-            top: BorderSide(
-              color: const Color(0xFF9AFF00).withOpacity(0.2),
-              width: 0.5,
-            ),
-          ),
-        ),
-        child: NavigationBar(
-          backgroundColor: const Color(0xFF0A0A0A),
-          selectedIndex: _index,
-          onDestinationSelected: _onNavTap,
-          indicatorColor: const Color(0xFF9AFF00).withOpacity(0.2),
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home, color: Color(0xFF9AFF00)),
-              label: l10n.home,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat, color: Color(0xFF9AFF00)),
-              label:
-                  l10n.chatPage, // You might want to add this to your ARB files
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.place_outlined),
-              selectedIcon: Icon(Icons.place, color: Color(0xFF9AFF00)),
-              label:
-                  l10n.mapPage, // You might want to add this to your ARB files
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.call_outlined),
-              selectedIcon: Icon(Icons.call, color: Color(0xFF9AFF00)),
-              label:
-                  l10n.helpPage, // You might want to add this to your ARB files
             ),
           ],
+        ),
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.1, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: _pages[_index],
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: themeProvider.surfaceColor,
+            border: Border(
+              top: BorderSide(
+                color: themeProvider.primaryColor.withOpacity(0.2),
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: NavigationBar(
+            backgroundColor: Colors.transparent,
+            selectedIndex: _index,
+            onDestinationSelected: _onNavTap,
+            indicatorColor: themeProvider.primaryColor.withOpacity(0.2),
+            destinations: [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined, color: themeProvider.secondaryTextColor),
+                selectedIcon: Icon(Icons.home, color: themeProvider.primaryColor),
+                label: l10n.home,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.chat_bubble_outline, color: themeProvider.secondaryTextColor),
+                selectedIcon: Icon(Icons.chat, color: themeProvider.primaryColor),
+                label: l10n.chatPage,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.place_outlined, color: themeProvider.secondaryTextColor),
+                selectedIcon: Icon(Icons.place, color: themeProvider.primaryColor),
+                label: l10n.mapPage,
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.call_outlined, color: themeProvider.secondaryTextColor),
+                selectedIcon: Icon(Icons.call, color: themeProvider.primaryColor),
+                label: l10n.helpPage,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -335,14 +374,15 @@ class _MainDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final parentState = context.findAncestorStateOfType<_HomeShellState>();
     final l10n = AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Drawer(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: themeProvider.surfaceColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF0A0A0A)),
+            decoration: BoxDecoration(color: themeProvider.surfaceColor),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -350,10 +390,10 @@ class _MainDrawer extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF9AFF00),
+                    color: themeProvider.primaryColor,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF9AFF00).withOpacity(0.3),
+                        color: themeProvider.primaryColor.withOpacity(0.3),
                         blurRadius: 12,
                         spreadRadius: 3,
                       ),
@@ -361,7 +401,7 @@ class _MainDrawer extends StatelessWidget {
                   ),
                   child: const Icon(
                     Icons.person,
-                    color: Color(0xFF0A0A0A),
+                    color: themeProvider.backgroundColor,
                     size: 24,
                   ),
                 ),
@@ -369,7 +409,7 @@ class _MainDrawer extends StatelessWidget {
                 Text(
                   l10n.title, //Luna menu
                   style: TextStyle(
-                    color: Color(0xFF9AFF00),
+                    color: themeProvider.primaryColor,
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
@@ -378,19 +418,19 @@ class _MainDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home, color: Color(0xFF9AFF00)),
+            leading: Icon(Icons.home, color: themeProvider.primaryColor),
             title: Text(
               l10n.home,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () => Navigator.pop(context),
           ),
 
           ListTile(
-            leading: const Icon(Icons.school, color: Color(0xFF9AFF00)),
+            leading: Icon(Icons.school, color: themeProvider.primaryColor),
             title: Text(
               l10n.educationalLessons,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -405,11 +445,11 @@ class _MainDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(
               Icons.question_answer_outlined,
-              color: Color(0xFF9AFF00),
+              color: themeProvider.primaryColor,
             ),
             title: Text(
               l10n.faq,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -421,10 +461,10 @@ class _MainDrawer extends StatelessWidget {
           ),
 
           ListTile(
-            leading: const Icon(Icons.settings, color: Color(0xFF9AFF00)),
+            leading: Icon(Icons.settings, color: themeProvider.primaryColor),
             title: Text(
               l10n.settings,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -436,10 +476,10 @@ class _MainDrawer extends StatelessWidget {
           ),
 
           ListTile(
-            leading: const Icon(Icons.logout, color: Color(0xFF9AFF00)),
+            leading: Icon(Icons.logout, color: themeProvider.primaryColor),
             title: Text(
               l10n.signOut,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -448,10 +488,10 @@ class _MainDrawer extends StatelessWidget {
           ),
 
           ListTile(
-            leading: const Icon(Icons.language, color: Color(0xFF9AFF00)),
+            leading: Icon(Icons.language, color: themeProvider.primaryColor),
             title: Text(
               l10n.changeLanguage,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -512,166 +552,214 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment.center,
-          radius: 1.2,
-          colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Background pattern
-          Positioned.fill(
-            child: CustomPaint(painter: BackgroundPatternPainter()),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const LocationBar(),
+            const SizedBox(height: 40),
+            Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const LocationBar(),
-                  const SizedBox(height: 40),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        // Luna Logo/Title with glow effect
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
+                  const SizedBox(height: 20),
+                  // Luna Logo/Title with enhanced animations
+                  _AnimatedLogo(),
+                  const SizedBox(height: 16),
+                  // Subtitle with typing animation
+                  _AnimatedSubtitle(),
+                  const SizedBox(height: 20),
+                  // Health remedy box with enhanced styling
+                  Consumer<RemedyProvider>(
+                    builder: (context, remedyProvider, child) {
+                      if (remedyProvider.remedy.isNotEmpty) {
+                        return AnimatedCard(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          child: Row(
                             children: [
-                              // Luna text moved above logo with better font
-                              const Text(
-                                'Luna',
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF9AFF00),
-                                  letterSpacing: 3,
-                                  fontFamily: 'Roboto',
-                                ),
+                              Icon(
+                                Icons.lightbulb_outline,
+                                color: themeProvider.primaryColor,
+                                size: 20,
                               ),
-                              const SizedBox(height: 12),
-                              // Animated glow circle - made slightly smaller
-                              Container(
-                                width: 240,
-                                height: 240,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      const Color(0xFF9AFF00).withOpacity(0.3),
-                                      const Color(0xFF9AFF00).withOpacity(0.1),
-                                      Colors.transparent,
-                                    ],
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  remedyProvider.remedy,
+                                  style: TextStyle(
+                                    color: themeProvider.primaryColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.4,
                                   ),
-                                ),
-                                child: Center(
-                                  child: Container(
-                                    width: 160,
-                                    height: 160,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFF9AFF00),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Image.asset(
-                                      'assets/Luna.png',
-                                      height: 100,
-                                      width: 100,
-                                    ),
-                                  ),
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Subtitle
-                        const Text(
-                          'Feeling Unwell or Just Curious',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF888888),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Health remedy box - brought up and made more compact
-                        Consumer<RemedyProvider>(
-                          builder: (context, remedyProvider, child) {
-                            if (remedyProvider.remedy.isNotEmpty) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 16,
-                                ),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF1A1A1A,
-                                  ).withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFF9AFF00,
-                                    ).withOpacity(0.4),
-                                    width: 1,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF9AFF00,
-                                      ).withOpacity(0.1),
-                                      blurRadius: 8,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.lightbulb_outline,
-                                      color: Color(0xFF9AFF00),
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        remedyProvider.remedy,
-                                        style: const TextStyle(
-                                          color: Color(0xFF9AFF00),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          height: 1.4,
-                                        ),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
-                        ),
-                        // Search Bar
-                      ],
-                    ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _AnimatedLogo extends StatefulWidget {
+  @override
+  State<_AnimatedLogo> createState() => _AnimatedLogoState();
+}
+
+class _AnimatedLogoState extends State<_AnimatedLogo>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late AnimationController _rotationController;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _rotationAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    _rotationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    _rotationAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _rotationController, curve: Curves.linear),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
+    return AnimatedBuilder(
+      animation: Listenable.merge([_pulseAnimation, _rotationAnimation]),
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            children: [
+              // Luna text with gradient effect
+              ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [
+                    themeProvider.primaryColor,
+                    themeProvider.primaryColor.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+                child: const Text(
+                  'Luna',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 3,
+                    fontFamily: 'Roboto',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Animated glow circle with rotation
+              Transform.rotate(
+                angle: _rotationAnimation.value * 2 * 3.14159,
+                child: Container(
+                  width: 240,
+                  height: 240,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        themeProvider.primaryColor.withOpacity(0.3 * _pulseAnimation.value),
+                        themeProvider.primaryColor.withOpacity(0.1 * _pulseAnimation.value),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 160,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: themeProvider.primaryColor,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: themeProvider.primaryColor.withOpacity(0.5),
+                            blurRadius: 20 * _pulseAnimation.value,
+                            spreadRadius: 5 * _pulseAnimation.value,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/Luna.png',
+                          height: 100,
+                          width: 100,
+                          themeProvider.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AnimatedSubtitle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
+    return TypingTextAnimation(
+      text: 'Feeling Unwell or Just Curious',
+      style: TextStyle(
+        fontSize: 16,
+        color: themeProvider.secondaryTextColor,
+        fontStyle: FontStyle.italic,
+      ),
+      duration: const Duration(milliseconds: 100),
     );
   }
 }
@@ -786,6 +874,7 @@ class _LocationBarState extends State<LocationBar> {
   String _text = '';
   String _remedy = '';
   bool _busy = false;
+  final themeProvider = Provider.of<ThemeProvider>(context);
 
   final Map<String, List<String>> _remedyMap = {
     'clear': [
@@ -1177,23 +1266,12 @@ class _LocationBarState extends State<LocationBar> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Column(
       children: [
-        Container(
-          height: 48,
+        AnimatedCard(
           padding: const EdgeInsets.only(right: 4),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
-            border: Border.all(color: const Color(0xFF9AFF00).withOpacity(0.3)),
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF9AFF00).withOpacity(0.1),
-                blurRadius: 8,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
           child: Row(
             children: [
               IconButton(
@@ -1210,7 +1288,7 @@ class _LocationBarState extends State<LocationBar> {
                             ),
                           ),
                         )
-                        : const Icon(Icons.refresh, color: Color(0xFF9AFF00)),
+                    : Icon(Icons.refresh, color: themeProvider.primaryColor),
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -1220,7 +1298,7 @@ class _LocationBarState extends State<LocationBar> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       _text,
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
+                      style: TextStyle(fontSize: 15, color: themeProvider.textColor),
                       overflow: TextOverflow.visible,
                     ),
                   ),
@@ -1240,12 +1318,18 @@ class _LocationBarState extends State<LocationBar> {
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
   @override
-  Widget build(BuildContext context) => Container(
-    color: const Color(0xFF0A0A0A),
-    child: const Center(
-      child: Text('Chat page', style: TextStyle(color: Colors.white)),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: Text(
+          'Chat page', 
+          style: TextStyle(color: themeProvider.textColor),
+        ),
+      ),
+    );
+  }
 }
 
 // class MapPage extends StatelessWidget {

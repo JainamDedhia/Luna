@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-
-// Theme constants
-const Color backgroundDark = Color(0xFF0A0A0A);
-const Color backgroundMid = Color(0xFF1A1A1A);
-const Color neonGreen = Color(0xFF9AFF00);
-const Color subtitleGray = Color(0xFF888888);
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/animated_button.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Scaffold(
-      backgroundColor: backgroundDark,
+      backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
-        backgroundColor: backgroundMid,
+        backgroundColor: themeProvider.surfaceColor,
         title: const Text(
           'Settings',
-          style: TextStyle(color: neonGreen),
+          style: TextStyle(color: themeProvider.primaryColor),
         ),
         centerTitle: true,
         elevation: 0,
-        iconTheme: const IconThemeData(color: neonGreen),
+        iconTheme: IconThemeData(color: themeProvider.primaryColor),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -29,29 +29,48 @@ class SettingsPage extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
 
+            // Theme Section
+            _sectionLabel('Theme', themeProvider),
+            AnimatedCard(
+              child: SwitchListTile(
+                activeColor: themeProvider.primaryColor,
+                inactiveTrackColor: themeProvider.secondaryTextColor.withOpacity(0.3),
+                value: themeProvider.isDarkMode,
+                onChanged: (_) => themeProvider.toggleTheme(),
+                title: Text(
+                  'Dark Mode',
+                  style: TextStyle(color: themeProvider.textColor),
+                ),
+                subtitle: Text(
+                  'Toggle between light and dark themes',
+                  style: TextStyle(color: themeProvider.secondaryTextColor),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+
             // Notifications Section
-            _sectionLabel('Notifications'),
-            _switchTile('Enable reminders'),
-            _switchTile('Daily health tips'),
+            _sectionLabel('Notifications', themeProvider),
+            _switchTile('Enable reminders', themeProvider),
+            _switchTile('Daily health tips', themeProvider),
             const SizedBox(height: 30),
 
             // Appearance Section
-            _sectionLabel('Appearance'),
-            _switchTile('Dark theme', initialValue: true),
-            _fakeDropDownTile('Accent Color', 'Neon Green'),
+            _sectionLabel('Appearance', themeProvider),
+            _fakeDropDownTile('Accent Color', 'Primary Green', themeProvider),
             const SizedBox(height: 30),
 
             // Account Section
-            _sectionLabel('Account'),
-            _standardTile('Privacy Settings'),
-            _standardTile('Delete Account'),
+            _sectionLabel('Account', themeProvider),
+            _standardTile('Privacy Settings', themeProvider),
+            _standardTile('Delete Account', themeProvider),
             const SizedBox(height: 30),
 
             // App Info Section
-            _sectionLabel('About App'),
-            _standardTile('Terms of Service'),
-            _standardTile('Privacy Policy'),
-            _standardTile('Version 1.0.0'),
+            _sectionLabel('About App', themeProvider),
+            _standardTile('Terms of Service', themeProvider),
+            _standardTile('Privacy Policy', themeProvider),
+            _standardTile('Version 1.0.0', themeProvider),
           ],
         ),
       ),
@@ -59,13 +78,13 @@ class SettingsPage extends StatelessWidget {
   }
 
   // Section label
-  Widget _sectionLabel(String label) {
+  Widget _sectionLabel(String label, ThemeProvider themeProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         label,
         style: const TextStyle(
-          color: subtitleGray,
+          color: themeProvider.secondaryTextColor,
           fontSize: 14,
           fontWeight: FontWeight.bold,
         ),
@@ -74,16 +93,11 @@ class SettingsPage extends StatelessWidget {
   }
 
   // Standard tappable tile
-  Widget _standardTile(String title) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundMid,
-        borderRadius: BorderRadius.circular(12),
-      ),
+  Widget _standardTile(String title, ThemeProvider themeProvider) {
+    return AnimatedCard(
       child: ListTile(
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        trailing: const Icon(Icons.chevron_right, color: neonGreen),
+        title: Text(title, style: TextStyle(color: themeProvider.textColor)),
+        trailing: Icon(Icons.chevron_right, color: themeProvider.primaryColor),
         onTap: () {
           // You can add routing or snackbars here
         },
@@ -92,37 +106,33 @@ class SettingsPage extends StatelessWidget {
   }
 
   // Switch tile
-  Widget _switchTile(String title, {bool initialValue = false}) {
-    return SwitchListTile(
-      activeColor: neonGreen,
-      inactiveTrackColor: subtitleGray.withOpacity(0.3),
-      value: initialValue,
-      onChanged: (_) {},
-      title: Text(title, style: const TextStyle(color: Colors.white)),
+  Widget _switchTile(String title, ThemeProvider themeProvider, {bool initialValue = false}) {
+    return AnimatedCard(
+      child: SwitchListTile(
+        activeColor: themeProvider.primaryColor,
+        inactiveTrackColor: themeProvider.secondaryTextColor.withOpacity(0.3),
+        value: initialValue,
+        onChanged: (_) {},
+        title: Text(title, style: TextStyle(color: themeProvider.textColor)),
+      ),
     );
   }
 
   // Fake dropdown tile for demo (non-functional)
-  Widget _fakeDropDownTile(String title, String value) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundMid,
-        border: Border.all(color: neonGreen.withOpacity(0.3)),
-        borderRadius: BorderRadius.circular(12),
-      ),
+  Widget _fakeDropDownTile(String title, String value, ThemeProvider themeProvider) {
+    return AnimatedCard(
       child: ListTile(
         title: Text(
           value,
-          style: const TextStyle(color: neonGreen),
+          style: TextStyle(color: themeProvider.primaryColor),
         ),
         subtitle: Text(
           title,
-          style: const TextStyle(color: subtitleGray, fontSize: 12),
+          style: TextStyle(color: themeProvider.secondaryTextColor, fontSize: 12),
         ),
-        trailing: const Icon(Icons.arrow_drop_down, color: neonGreen),
+        trailing: Icon(Icons.arrow_drop_down, color: themeProvider.primaryColor),
         onTap: () {
-          ScaffoldMessenger.of(titleKey.currentContext!).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('This is a demo. Options are not changeable yet.'),
               backgroundColor: Colors.black87,
@@ -133,6 +143,3 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
-
-// For SnackBar demo — add this in your main file or MaterialApp:
-final GlobalKey<ScaffoldMessengerState> titleKey = GlobalKey<ScaffoldMessengerState>();

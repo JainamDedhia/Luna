@@ -4,6 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/animated_button.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -30,17 +34,19 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: themeProvider.textColor),
         centerTitle: true,
         title: Text(
           l10n.profile,
           style: TextStyle(
-            color: Color(0xFFB6F265),
+            color: themeProvider.primaryColor,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
@@ -49,16 +55,22 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         children: [
           const SizedBox(height: 20),
-          GestureDetector(
+          AnimatedCard(
+            padding: EdgeInsets.zero,
+            borderRadius: BorderRadius.circular(60),
             onTap: _pickImage,
             child: CircleAvatar(
               radius: 60,
-              backgroundColor: const Color(0xFF262626),
+              backgroundColor: themeProvider.cardColor,
               backgroundImage: _profileImage != null
                   ? FileImage(_profileImage!)
                   : null,
               child: _profileImage == null
-                  ? const Icon(Icons.camera_alt, size: 40, color: Colors.white54)
+                  ? Icon(
+                      Icons.camera_alt, 
+                      size: 40, 
+                      color: themeProvider.secondaryTextColor,
+                    )
                   : null,
             ),
           ),
@@ -68,57 +80,37 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFD9F99D),
+              color: themeProvider.primaryColor,
             ),
           ),
-          // const Text(
-          //   'Flutter Developer',
-          //   style: TextStyle(fontSize: 15, color: Colors.white70),
-          // ),
           const SizedBox(height: 30),
-          Divider(color: Colors.grey[800], thickness: 1),
+          Divider(color: themeProvider.secondaryTextColor.withOpacity(0.3), thickness: 1),
           const SizedBox(height: 10),
-          _buildInfoTile(Icons.email, l10n.email, 'haileyjons@example.com'),
-          _buildInfoTile(Icons.phone, l10n.phone, '+91 98765 43210'),
-          _buildInfoTile(Icons.location_on, l10n.location, 'Ronbinsville, New Jersey'),
+          _buildInfoTile(Icons.email, l10n.email, 'haileyjons@example.com', themeProvider),
+          _buildInfoTile(Icons.phone, l10n.phone, '+91 98765 43210', themeProvider),
+          _buildInfoTile(Icons.location_on, l10n.location, 'Ronbinsville, New Jersey', themeProvider),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: AnimatedButton(
+                    text: l10n.edit,
+                    icon: Icons.edit,
                     onPressed: () {
                       // Edit profile
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF84CC16),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.edit),
-                    label: Text(l10n.edit),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: AnimatedButton(
+                    text: l10n.logout,
+                    icon: Icons.logout,
                     onPressed: () {
                       // Logout
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD9F99D),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.logout),
-                    label: Text(l10n.logout),
                   ),
                 ),
               ],
@@ -129,19 +121,21 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String title, String subtitle) {
-    return ListTile(
-      leading: Icon(icon, color: const Color(0xFF84CC16)),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: Color(0xFFD9F99D),
-          fontWeight: FontWeight.w600,
+  Widget _buildInfoTile(IconData icon, String title, String subtitle, ThemeProvider themeProvider) {
+    return AnimatedCard(
+      child: ListTile(
+        leading: Icon(icon, color: themeProvider.primaryColor),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: themeProvider.primaryColor,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(color: Colors.white70),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(color: themeProvider.secondaryTextColor),
+        ),
       ),
     );
   }

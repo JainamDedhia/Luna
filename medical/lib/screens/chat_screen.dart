@@ -7,6 +7,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../services/translation_service.dart';
 import 'package:provider/provider.dart';
 import '../locale_provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/animated_button.dart';
+import '../widgets/typing_text_animation.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -24,15 +28,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   
-  // Color scheme from EducationalLessonsPage
-// Color scheme from EducationalLessonsPage
-// Soothing Blue Theme
- final Color _primaryColor = const Color(0xFF9AFF00); // Neon green
-  final Color _backgroundColor = const Color(0xFF0A0A0A); // Dark background
-  final Color _cardColor = const Color(0xFF1A1A1A); // Mid background
-  final Color _textColor = Colors.white;
-  final Color _secondaryTextColor = const Color(0xFF888888);
-
   // Language mapping from locale codes to language names
   final Map<String, String> _localeToLanguage = {
     'en': 'English',
@@ -153,26 +148,30 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer<LocaleProvider>(
       builder: (context, localeProvider, child) {
-        return Scaffold(
-          backgroundColor: _backgroundColor,
-          body: Column(
-            children: [
-              _buildAppBar(),
-              Expanded(
-                child: _messages.isEmpty 
-                    ? _buildEmptyState()
-                    : _buildMessagesList(),
+        return Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
+                children: [
+                  _buildAppBar(themeProvider),
+                  Expanded(
+                    child: _messages.isEmpty 
+                        ? _buildEmptyState(themeProvider)
+                        : _buildMessagesList(themeProvider),
+                  ),
+                  if (_isLoading) _buildTypingIndicator(themeProvider),
+                  _buildInputArea(themeProvider),
+                ],
               ),
-              if (_isLoading) _buildTypingIndicator(),
-              _buildInputArea(),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(ThemeProvider themeProvider) {
     final currentLanguage = _getCurrentLanguage();
     
     return Container(
@@ -183,11 +182,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         bottom: 16,
       ),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: themeProvider.surfaceColor,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: themeProvider.primaryColor.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -196,12 +202,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _primaryColor.withOpacity(0.2),
+                  color: themeProvider.primaryColor.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.local_hospital,
-                  color: _primaryColor,
+                  color: themeProvider.primaryColor,
                   size: 24,
                 ),
               ),
@@ -213,7 +219,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     Text(
                       '🌿 Ayurvedic First Aid',
                       style: TextStyle(
-                        color: _primaryColor,
+                        color: themeProvider.primaryColor,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -221,7 +227,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     Text(
                       'Natural remedies for wellness',
                       style: TextStyle(
-                        color: _secondaryTextColor,
+                        color: themeProvider.secondaryTextColor,
                         fontSize: 12,
                       ),
                     ),
@@ -230,7 +236,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
               IconButton(
                 onPressed: _showInfoDialog,
-                icon: Icon(Icons.info_outline, color: _primaryColor),
+                icon: Icon(Icons.info_outline, color: themeProvider.primaryColor),
               ),
             ],
           ),
@@ -239,28 +245,28 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: _primaryColor.withOpacity(0.1),
+              color: themeProvider.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: _primaryColor.withOpacity(0.3)),
+              border: Border.all(color: themeProvider.primaryColor.withOpacity(0.3)),
             ),
             child: Row(
               children: [
-                Icon(Icons.language, color: _primaryColor, size: 20),
+                Icon(Icons.language, color: themeProvider.primaryColor, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Language: ',
-                  style: TextStyle(color: _primaryColor, fontSize: 14),
+                  style: TextStyle(color: themeProvider.primaryColor, fontSize: 14),
                 ),
                 Expanded(
                   child: Text(
                     currentLanguage,
-                    style: TextStyle(color: _primaryColor, fontSize: 14),
+                    style: TextStyle(color: themeProvider.primaryColor, fontSize: 14),
                   ),
                 ),
                 Text(
                   '(Change from menu)',
                   style: TextStyle(
-                    color: _secondaryTextColor, 
+                    color: themeProvider.secondaryTextColor, 
                     fontSize: 12,
                     fontStyle: FontStyle.italic,
                   ),
@@ -273,7 +279,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-Widget _buildEmptyState() {
+Widget _buildEmptyState(ThemeProvider themeProvider) {
   return Expanded(
     child: SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -281,91 +287,76 @@ Widget _buildEmptyState() {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 40), // Add spacing from top
-          Container(
+          AnimatedCard(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Image.asset(
-              'assets/Luna.png',
-              height: 64,
-              width: 64,
+            borderRadius: BorderRadius.circular(100),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/Luna.png',
+                height: 64,
+                width: 64,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(height: 24),
-          Text(
-            'Welcome to Ayurvedic First Aid',
+          TypingTextAnimation(
+            text: 'Welcome to Ayurvedic First Aid',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: _primaryColor,
+              color: themeProvider.primaryColor,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             'Get natural remedies for common health issues',
             style: TextStyle(
               fontSize: 16,
-              color: _secondaryTextColor,
+              color: themeProvider.secondaryTextColor,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          _buildQuickActions(),
+          _buildQuickActions(themeProvider),
         ],
       ),
     ),
   );
 }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(ThemeProvider themeProvider) {
     final quickActions = _getQuickActions();
     return Wrap(
       spacing: 12,
       runSpacing: 12,
       children: quickActions.map((action) => 
-        GestureDetector(
+        AnimatedCard(
           onTap: () => _sendMessage(action['query']),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: _primaryColor.withOpacity(0.3)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          borderRadius: BorderRadius.circular(20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(action['icon'], 
+                   color: themeProvider.primaryColor, 
+                   size: 20),
+              const SizedBox(width: 8),
+              Text(
+                action['text'],
+                style: TextStyle(
+                  color: themeProvider.primaryColor,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(action['icon'], 
-                     color: _primaryColor, 
-                     size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  action['text'],
-                  
-                  style: TextStyle(
-                    color: _primaryColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ).toList(),
     );
   }
 
-  Widget _buildMessagesList() {
+  Widget _buildMessagesList(ThemeProvider themeProvider) {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -374,15 +365,15 @@ Widget _buildEmptyState() {
         return MessageBubble(
           message: _messages[index],
           isUserMessage: _messages[index].type == MessageType.user,
-          userColor: _primaryColor,
-          botColor: _cardColor,
-          textColor: _textColor,
+          userColor: themeProvider.primaryColor,
+          botColor: themeProvider.cardColor,
+          textColor: themeProvider.textColor,
         );
       },
     );
   }
 
-  Widget _buildTypingIndicator() {
+  Widget _buildTypingIndicator(ThemeProvider themeProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -391,12 +382,12 @@ Widget _buildEmptyState() {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: _primaryColor,
+              color: themeProvider.primaryColor,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Icon(
               Icons.local_hospital,
-              color: _backgroundColor,
+              color: themeProvider.backgroundColor,
               size: 20,
             ),
           ),
@@ -411,7 +402,7 @@ Widget _buildEmptyState() {
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _primaryColor.withOpacity(
+                      color: themeProvider.primaryColor.withOpacity(
                         0.3 + 0.7 * 
                         ((_typingAnimationController.value + index * 0.3) % 1),
                       ),
@@ -426,7 +417,7 @@ Widget _buildEmptyState() {
           Text(
             'Analyzing your query...',
             style: TextStyle(
-              color: _secondaryTextColor,
+              color: themeProvider.secondaryTextColor,
               fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
@@ -436,15 +427,22 @@ Widget _buildEmptyState() {
     );
   }
 
-  Widget _buildInputArea() {
+  Widget _buildInputArea(ThemeProvider themeProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor,
+        color: themeProvider.surfaceColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: themeProvider.primaryColor.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Row(
@@ -452,10 +450,10 @@ Widget _buildEmptyState() {
             Expanded(
               child: TextField(
                 controller: _textController,
-                style: TextStyle(color: _textColor),
+                style: TextStyle(color: themeProvider.textColor),
                 decoration: InputDecoration(
                   hintText: 'Describe your health concern...',
-                  hintStyle: TextStyle(color: _secondaryTextColor),
+                  hintStyle: TextStyle(color: themeProvider.secondaryTextColor),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
@@ -466,26 +464,71 @@ Widget _buildEmptyState() {
             ),
             const SizedBox(width: 8),
             // Microphone Button
-            Container(
-              decoration: BoxDecoration(
-                color: _cardColor,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: _primaryColor.withOpacity(0.3)),
-              ),
+            AnimatedCard(
+              padding: EdgeInsets.zero,
+              borderRadius: BorderRadius.circular(20),
               child: IconButton(
                 onPressed: _listen,
                 icon: Icon(
                   _isListening ? Icons.mic : Icons.mic_none,
-                  color: _primaryColor,
+                  color: themeProvider.primaryColor,
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: _primaryColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
+            AnimatedButton(
+              text: '',
+              width: 48,
+              height: 48,
+              icon: _isLoading ? Icons.hourglass_empty : Icons.send,
+              onPressed: _isLoading ? () {} : () => _sendMessage(_textController.text),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showInfoDialog() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeProvider.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info, color: themeProvider.primaryColor),
+            const SizedBox(width: 8),
+            Text(
+              'About Ayurvedic First Aid', 
+              style: TextStyle(color: themeProvider.primaryColor),
+            ),
+          ],
+        ),
+        content: Text(
+          'This app provides traditional Ayurvedic remedies for common health issues. '
+          'Always consult a qualified healthcare professional for serious conditions.\n\n'
+          '⚠️ This is not a substitute for professional medical advice.',
+          style: TextStyle(color: themeProvider.textColor, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Got it', 
+              style: TextStyle(color: themeProvider.primaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
               child: IconButton(
                 onPressed: _isLoading ? null : () => _sendMessage(_textController.text),
                 icon: Icon(

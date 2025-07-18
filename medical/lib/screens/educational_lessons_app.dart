@@ -3,6 +3,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
 
 class EducationalLessonsPage extends StatelessWidget {
   const EducationalLessonsPage({super.key});
@@ -10,6 +13,7 @@ class EducationalLessonsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n=AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     final List<Map<String, dynamic>> lessons = [
       {
@@ -70,12 +74,12 @@ class EducationalLessonsPage extends StatelessWidget {
 
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: themeProvider.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFFD9F99D)),
+          icon: Icon(Icons.arrow_back, color: themeProvider.primaryColor),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -85,13 +89,13 @@ class EducationalLessonsPage extends StatelessWidget {
               l10n.educationalLessons,
               style: TextStyle(
                 fontSize: 22,
-                color: Color(0xFFD9F99D),
+                color: themeProvider.primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               l10n.educationSubtitle,
-              style: TextStyle(fontSize: 12, color: Color(0xFFD9F99D)),
+              style: TextStyle(fontSize: 12, color: themeProvider.primaryColor),
             ),
           ],
         ),
@@ -101,14 +105,8 @@ class EducationalLessonsPage extends StatelessWidget {
         itemCount: lessons.length,
         itemBuilder: (context, index) {
           final lesson = lessons[index];
-          return Container(
-            height: 100,
-            margin: const EdgeInsets.only(bottom: 20),
+          return AnimatedCard(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2C),
-              borderRadius: BorderRadius.circular(20),
-            ),
             child: Row(
               children: [
                 Container(
@@ -132,24 +130,24 @@ class EducationalLessonsPage extends StatelessWidget {
                     children: [
                       Text(
                         lesson['title'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
-                          color: Color(0xFFD9F99D),
+                          color: themeProvider.primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${lesson['lessons']} Lessons',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFD9F99D),
+                          color: themeProvider.primaryColor,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: Color(0xFFD9F99D), size: 28),
+                Icon(Icons.chevron_right, color: themeProvider.primaryColor, size: 28),
               ],
             ),
           );
