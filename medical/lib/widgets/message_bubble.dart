@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import '../models/message.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final bool isUserMessage;
-  final Color userColor;
-  final Color botColor;
-  final Color textColor;
+  final Color? userColor;
+  final Color? botColor;
+  final Color? textColor;
 
   const MessageBubble({
     Key? key,
     required this.message,
     required this.isUserMessage,
-    this.userColor = const Color(0xFFD9F99D),
-    this.botColor = const Color(0xFF2C2C2C),
-    this.textColor = const Color(0xFFD9F99D),
+    this.userColor,
+    this.botColor,
+    this.textColor,
   }) : super(key: key);
 
 Widget _buildSeverityWarning() {
@@ -76,6 +78,11 @@ Widget _buildTimeLimitWarning() {
 }
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final effectiveUserColor = userColor ?? themeProvider.primaryColor;
+    final effectiveBotColor = botColor ?? themeProvider.cardColor;
+    final effectiveTextColor = textColor ?? themeProvider.textColor;
+    
     final isEmergency = message.isEmergency;
     final isWelcome = message.type == MessageType.welcome;
 
@@ -94,15 +101,15 @@ Widget _buildTimeLimitWarning() {
               ),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _getBubbleColor(isUserMessage, isEmergency, isWelcome),
+                color: _getBubbleColor(isUserMessage, isEmergency, isWelcome, themeProvider),
                 borderRadius: _getBorderRadius(isUserMessage),
                 border: !isUserMessage ? Border.all(
-                  color: userColor.withOpacity(0.3),
+                  color: effectiveUserColor.withOpacity(0.3),
                   width: 1,
                 ) : null,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: themeProvider.primaryColor.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -130,32 +137,38 @@ Widget _buildTimeLimitWarning() {
   }
 
   Widget _buildAvatar() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final effectiveUserColor = userColor ?? themeProvider.primaryColor;
+    
     return Container(
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: userColor,
+        color: effectiveUserColor,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Icon(
         Icons.local_hospital,
-        color: Colors.black,
+        color: themeProvider.backgroundColor,
         size: 20,
       ),
     );
   }
 
   Widget _buildUserAvatar() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final effectiveUserColor = userColor ?? themeProvider.primaryColor;
+    
     return Container(
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: userColor.withOpacity(0.8),
+        color: effectiveUserColor.withOpacity(0.8),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Icon(
         Icons.person,
-        color: Colors.black,
+        color: themeProvider.backgroundColor,
         size: 20,
       ),
     );
@@ -188,12 +201,15 @@ Widget _buildTimeLimitWarning() {
   }
 
   Widget _buildMessageContent() {
+  final themeProvider = Provider.of<ThemeProvider>(context);
+  final effectiveTextColor = textColor ?? themeProvider.textColor;
+  
   return Text(
     message.text,
     softWrap: true,
     overflow: TextOverflow.visible,
     style: TextStyle(
-      color: isUserMessage ? Colors.black : textColor,
+      color: isUserMessage ? themeProvider.backgroundColor : effectiveTextColor,
       fontSize: 15,
       height: 1.4,
     ),
@@ -202,16 +218,21 @@ Widget _buildTimeLimitWarning() {
 
 
   Widget _buildStepsList() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final effectiveBotColor = botColor ?? themeProvider.cardColor;
+    final effectiveUserColor = userColor ?? themeProvider.primaryColor;
+    final effectiveTextColor = textColor ?? themeProvider.textColor;
+    
     if (message.steps == null || message.steps!.isEmpty) return const SizedBox();
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: botColor.withOpacity(0.8),
+        color: effectiveBotColor.withOpacity(0.8),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: userColor.withOpacity(0.2),
+          color: effectiveUserColor.withOpacity(0.2),
         ),
       ),
       child: Column(
@@ -221,7 +242,7 @@ Widget _buildTimeLimitWarning() {
             '📋 Steps to follow:',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: userColor,
+              color: effectiveUserColor,
             ),
           ),
           const SizedBox(height: 8),
@@ -231,7 +252,7 @@ Widget _buildTimeLimitWarning() {
               step,
               style: TextStyle(
                 fontSize: 14,
-                color: textColor,
+                color: effectiveTextColor,
               ),
             ),
           )),
@@ -241,20 +262,27 @@ Widget _buildTimeLimitWarning() {
   }
 
   Widget _buildTimestamp() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Text(
       _formatTime(message.timestamp),
       style: TextStyle(
         fontSize: 11,
-        color: isUserMessage ? Colors.black.withOpacity(0.7) : textColor.withOpacity(0.7),
+        color: isUserMessage 
+            ? themeProvider.backgroundColor.withOpacity(0.7) 
+            : themeProvider.textColor.withOpacity(0.7),
       ),
     );
   }
 
-  Color _getBubbleColor(bool isUser, bool isEmergency, bool isWelcome) {
-    if (isUser) return userColor;
-    if (isWelcome) return botColor.withOpacity(0.8);
+  Color _getBubbleColor(bool isUser, bool isEmergency, bool isWelcome, ThemeProvider themeProvider) {
+    final effectiveUserColor = userColor ?? themeProvider.primaryColor;
+    final effectiveBotColor = botColor ?? themeProvider.cardColor;
+    
+    if (isUser) return effectiveUserColor;
+    if (isWelcome) return effectiveBotColor.withOpacity(0.8);
     if (isEmergency) return Colors.redAccent.withOpacity(0.2);
-    return botColor;
+    return effectiveBotColor;
   }
 
   BorderRadius _getBorderRadius(bool isUser) {

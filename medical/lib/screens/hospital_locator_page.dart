@@ -5,6 +5,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:math' as math;
 import '../l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/animated_button.dart';
 
 class HospitalLocatorPage extends StatefulWidget {
   const HospitalLocatorPage({Key? key}) : super(key: key);
@@ -273,9 +277,11 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
   }
 
   void _showHospitalDetails(Map<String, dynamic> hospital) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: themeProvider.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -298,7 +304,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                             width: 40,
                             height: 4,
                             decoration: BoxDecoration(
-                              color: Colors.grey[600],
+                              color: themeProvider.secondaryTextColor,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -313,9 +319,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                 color:
                                     hospital['emergency']
                                         ? Colors.red.withOpacity(0.2)
-                                        : const Color(
-                                          0xFF9AFF00,
-                                        ).withOpacity(0.2),
+                                        : themeProvider.primaryColor.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -325,7 +329,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                 color:
                                     hospital['emergency']
                                         ? Colors.red
-                                        : const Color(0xFF9AFF00),
+                                        : themeProvider.primaryColor,
                                 size: 24,
                               ),
                             ),
@@ -336,8 +340,8 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                 children: [
                                   Text(
                                     hospital['name'],
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: themeProvider.textColor,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -345,7 +349,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                   Text(
                                     hospital['type'],
                                     style: TextStyle(
-                                      color: Colors.grey[400],
+                                      color: themeProvider.secondaryTextColor,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -364,13 +368,13 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF9AFF00).withOpacity(0.2),
+                                color: themeProvider.primaryColor.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Text(
                                 '${hospital['distance'].toStringAsFixed(1)} km away',
-                                style: const TextStyle(
-                                  color: Color(0xFF9AFF00),
+                                style: TextStyle(
+                                  color: themeProvider.primaryColor,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -386,7 +390,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                 const SizedBox(width: 4),
                                 Text(
                                   '${hospital['rating']} / 5.0',
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: themeProvider.textColor),
                                 ),
                               ],
                             ),
@@ -399,10 +403,10 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                         _buildInfoRow(Icons.access_time, hospital['openTime']),
 
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'Services Available',
                           style: TextStyle(
-                            color: Color(0xFF9AFF00),
+                            color: themeProvider.primaryColor,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
@@ -422,13 +426,13 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[800],
+                                        color: themeProvider.cardColor,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Text(
                                         service,
-                                        style: const TextStyle(
-                                          color: Colors.white,
+                                        style: TextStyle(
+                                          color: themeProvider.textColor,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -441,54 +445,24 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: ElevatedButton.icon(
+                              child: AnimatedButton(
+                                text: 'Call',
+                                icon: Icons.phone,
                                 onPressed:
                                     () => _makePhoneCall(hospital['phone']),
-                                icon: const Icon(
-                                  Icons.phone,
-                                  color: Color(0xFF0A0A0A),
-                                ),
-                                label: const Text(
-                                  'Call',
-                                  style: TextStyle(color: Color(0xFF0A0A0A)),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF9AFF00),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: ElevatedButton.icon(
+                              child: AnimatedButton(
+                                text: 'Directions',
+                                icon: Icons.directions,
                                 onPressed:
                                     () => _openMaps(
                                       hospital['latitude'],
                                       hospital['longitude'],
                                       hospital['name'],
                                     ),
-                                icon: const Icon(
-                                  Icons.directions,
-                                  color: Colors.white,
-                                ),
-                                label: const Text(
-                                  'Directions',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey[800],
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
                               ),
                             ),
                           ],
@@ -502,16 +476,18 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF9AFF00), size: 20),
+          Icon(icon, color: themeProvider.primaryColor, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: themeProvider.textColor, fontSize: 16),
             ),
           ),
         ],
@@ -522,19 +498,20 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
   @override
   Widget build(BuildContext context) {
     final l10n=AppLocalizations.of(context)!;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0A),
+        backgroundColor: themeProvider.backgroundColor,
         title: Text(
           l10n.hosNearME,
           style: TextStyle(
-            color: Color(0xFF9AFF00),
+            color: themeProvider.primaryColor,
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF9AFF00)),
+        iconTheme: IconThemeData(color: themeProvider.primaryColor),
         actions: [
           IconButton(
             onPressed: _getCurrentLocation,
@@ -545,15 +522,15 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
       ),
       body:
           _isLoading
-              ? const Center(
+              ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: Color(0xFF9AFF00)),
+                    CircularProgressIndicator(color: themeProvider.primaryColor),
                     SizedBox(height: 16),
                     Text(
                       'Finding hospitals near you...',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(color: themeProvider.textColor, fontSize: 16),
                     ),
                   ],
                 ),
@@ -573,8 +550,8 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
                         _errorMessage,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: themeProvider.textColor,
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
@@ -584,11 +561,11 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                     ElevatedButton(
                       onPressed: _getCurrentLocation,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF9AFF00),
+                        backgroundColor: themeProvider.primaryColor,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Try Again',
-                        style: TextStyle(color: Color(0xFF0A0A0A)),
+                        style: TextStyle(color: themeProvider.backgroundColor),
                       ),
                     ),
                   ],
@@ -646,14 +623,14 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      decoration: const BoxDecoration(color: Color(0xFF1A1A1A)),
+                      decoration: BoxDecoration(color: themeProvider.surfaceColor),
                       child: Column(
                         children: [
                           const SizedBox(height: 16),
                           Text(
                             l10n.hosNearBY,
                             style: TextStyle(
-                              color: Color(0xFF9AFF00),
+                              color: themeProvider.primaryColor,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
@@ -662,11 +639,11 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                           Expanded(
                             child:
                                 _nearbyHospitals.isEmpty
-                                    ? const Center(
+                                    ? Center(
                                       child: Text(
                                         'No hospitals found nearby',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: themeProvider.textColor,
                                           fontSize: 16,
                                         ),
                                       ),
@@ -679,11 +656,8 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                       itemBuilder: (context, index) {
                                         final hospital =
                                             _nearbyHospitals[index];
-                                        return Card(
-                                          color: const Color(0xFF2A2A2A),
-                                          margin: const EdgeInsets.only(
-                                            bottom: 8,
-                                          ),
+                                        return AnimatedCard(
+                                          onTap: () => _showHospitalDetails(hospital),
                                           child: ListTile(
                                             leading: CircleAvatar(
                                               backgroundColor:
@@ -691,9 +665,7 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                                       ? Colors.red.withOpacity(
                                                         0.2,
                                                       )
-                                                      : const Color(
-                                                        0xFF9AFF00,
-                                                      ).withOpacity(0.2),
+                                                      : themeProvider.primaryColor.withOpacity(0.2),
                                               child: Icon(
                                                 hospital['emergency']
                                                     ? Icons.warning
@@ -701,22 +673,20 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                                 color:
                                                     hospital['emergency']
                                                         ? Colors.red
-                                                        : const Color(
-                                                          0xFF9AFF00,
-                                                        ),
+                                                        : themeProvider.primaryColor,
                                               ),
                                             ),
                                             title: Text(
                                               hospital['name'],
-                                              style: const TextStyle(
-                                                color: Colors.white,
+                                              style: TextStyle(
+                                                color: themeProvider.textColor,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                             subtitle: Text(
                                               '${hospital['type']} • ${hospital['distance'].toStringAsFixed(1)} km',
                                               style: TextStyle(
-                                                color: Colors.grey[400],
+                                                color: themeProvider.secondaryTextColor,
                                               ),
                                             ),
                                             trailing: Row(
@@ -729,16 +699,12 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                                                 ),
                                                 Text(
                                                   ' ${hospital['rating']}',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
+                                                  style: TextStyle(
+                                                    color: themeProvider.textColor,
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                            onTap:
-                                                () => _showHospitalDetails(
-                                                  hospital,
-                                                ),
                                           ),
                                         );
                                       },
