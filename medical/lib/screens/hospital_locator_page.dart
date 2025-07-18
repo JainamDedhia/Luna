@@ -612,7 +612,8 @@ class _HospitalLocatorPageState extends State<HospitalLocatorPage> {
                             TileLayer(
                               urlTemplate:
                                   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.example.app',
+                              subdomains: ['a', 'b', 'c'],
+  userAgentPackageName: 'com.yourdomain.appname', // REQUIRED
                             ),
                             MarkerLayer(markers: _buildMarkers()),
                           ],

@@ -92,7 +92,7 @@ Widget _buildTimeLimitWarning() {
         mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isUserMessage) _buildAvatar(),
+          if (!isUserMessage) _buildAvatar(context, themeProvider),
           const SizedBox(width: 8),
           Flexible(
             child: Container(
@@ -121,22 +121,22 @@ Widget _buildTimeLimitWarning() {
     if (isEmergency) _buildEmergencyHeader(),
     if (message.severity != null) _buildSeverityWarning(),
     if (message.timeLimit != null) _buildTimeLimitWarning(),
-    _buildMessageContent(),
-    if (message.steps != null) _buildStepsList(),
+    _buildMessageContent(context, themeProvider),
+    if (message.steps != null) _buildStepsList(context, themeProvider),
     const SizedBox(height: 4),
-    _buildTimestamp(),
+    _buildTimestamp(context, themeProvider),
   ],
 ),
               ),
             ),
           const SizedBox(width: 8),
-          if (isUserMessage) _buildUserAvatar(),
+          if (isUserMessage) _buildUserAvatar(context, themeProvider),
         ],
       ),
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context,ThemeProvider themeProvider) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final effectiveUserColor = userColor ?? themeProvider.primaryColor;
     
@@ -155,7 +155,7 @@ Widget _buildTimeLimitWarning() {
     );
   }
 
-  Widget _buildUserAvatar() {
+  Widget _buildUserAvatar(BuildContext context,ThemeProvider themeProvider) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final effectiveUserColor = userColor ?? themeProvider.primaryColor;
     
@@ -200,7 +200,7 @@ Widget _buildTimeLimitWarning() {
     );
   }
 
-  Widget _buildMessageContent() {
+  Widget _buildMessageContent(BuildContext context,ThemeProvider themeProvider) {
   final themeProvider = Provider.of<ThemeProvider>(context);
   final effectiveTextColor = textColor ?? themeProvider.textColor;
   
@@ -217,7 +217,7 @@ Widget _buildTimeLimitWarning() {
 }
 
 
-  Widget _buildStepsList() {
+  Widget _buildStepsList(BuildContext context,ThemeProvider themeProvider) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final effectiveBotColor = botColor ?? themeProvider.cardColor;
     final effectiveUserColor = userColor ?? themeProvider.primaryColor;
@@ -261,7 +261,7 @@ Widget _buildTimeLimitWarning() {
     );
   }
 
-  Widget _buildTimestamp() {
+  Widget _buildTimestamp(BuildContext context,ThemeProvider themeProvider) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     
     return Text(

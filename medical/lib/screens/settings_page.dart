@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
       backgroundColor: themeProvider.backgroundColor,
       appBar: AppBar(
         backgroundColor: themeProvider.surfaceColor,
-        title: const Text(
+        title: Text(
           'Settings',
           style: TextStyle(color: themeProvider.primaryColor),
         ),
@@ -57,7 +57,7 @@ class SettingsPage extends StatelessWidget {
 
             // Appearance Section
             _sectionLabel('Appearance', themeProvider),
-            _fakeDropDownTile('Accent Color', 'Primary Green', themeProvider),
+            _fakeDropDownTile(context, 'Accent Color', 'Primary Green', themeProvider),
             const SizedBox(height: 30),
 
             // Account Section
@@ -83,7 +83,7 @@ class SettingsPage extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           color: themeProvider.secondaryTextColor,
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   // Fake dropdown tile for demo (non-functional)
-  Widget _fakeDropDownTile(String title, String value, ThemeProvider themeProvider) {
+  Widget _fakeDropDownTile(BuildContext context, title, String value, ThemeProvider themeProvider) {
     return AnimatedCard(
       child: ListTile(
         title: Text(

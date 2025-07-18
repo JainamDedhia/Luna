@@ -8,6 +8,7 @@ import 'package:medical/screens/auth_screen.dart';
 import 'package:medical/screens/chat_screen.dart';
 import 'package:medical/screens/educational_lessons_app.dart';
 import 'package:medical/screens/settings_page.dart';
+import 'package:medical/widgets/typing_text_animation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import 'package:medical/screens/hospital_locator_page.dart';
@@ -399,7 +400,7 @@ class _MainDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person,
                     color: themeProvider.backgroundColor,
                     size: 24,
@@ -443,7 +444,7 @@ class _MainDrawer extends StatelessWidget {
           ),
 
           ListTile(
-            leading: const Icon(
+            leading: Icon(
               Icons.question_answer_outlined,
               color: themeProvider.primaryColor,
             ),
@@ -732,7 +733,7 @@ class _AnimatedLogoState extends State<_AnimatedLogo>
                           'assets/Luna.png',
                           height: 100,
                           width: 100,
-                          themeProvider.primaryColor,
+                          color: themeProvider.primaryColor,
                         ),
                       ),
                     ),
@@ -874,7 +875,7 @@ class _LocationBarState extends State<LocationBar> {
   String _text = '';
   String _remedy = '';
   bool _busy = false;
-  final themeProvider = Provider.of<ThemeProvider>(context);
+  
 
   final Map<String, List<String>> _remedyMap = {
     'clear': [

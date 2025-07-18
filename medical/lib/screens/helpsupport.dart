@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/l10n/app_localizations.dart';
+import 'package:medical/theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
@@ -559,7 +560,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
       padding: const EdgeInsets.only(bottom: 16, top: 8),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: themeProvider.primaryColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,

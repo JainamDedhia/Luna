@@ -11,6 +11,7 @@ import '../providers/theme_provider.dart';
 import '../widgets/animated_card.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/typing_text_animation.dart';
+import 'package:medical/theme/theme.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -28,6 +29,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   
+Color neonGreen = Color(0xFF39FF14); // example
+ Color backgroundMid = Colors.grey[200]!;
+ Color subtitleGray = Colors.grey;
+ Color backgroundDark = Colors.black87;
+ Color _textColor = Colors.black; // or appropriate color
+ Color _primaryColor = Colors.blue; // or your theme color
+ Color _cardColor = Colors.white; // or your card background
   // Language mapping from locale codes to language names
   final Map<String, String> _localeToLanguage = {
     'en': 'English',
@@ -143,6 +151,98 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _typingAnimationController.dispose();
     super.dispose();
   }
+  Future<void> _sendMessage(String text) async {
+    if (text.trim().isEmpty || _isLoading) return;
+
+    final trimmedText = text.trim();
+    final userMessage = ChatMessage.user(trimmedText);
+    
+    setState(() {
+      _messages.add(userMessage);
+      _isLoading = true;
+      _textController.clear();
+    });
+
+    _scrollToBottom();
+
+    try {
+      // Get current language from LocaleProvider
+      final currentLanguage = _getCurrentLanguage();
+      
+      // Send message with current language from menu selection
+      final botResponse = await ChatService.sendMessage(trimmedText, currentLanguage);
+      
+      setState(() {
+        _messages.add(botResponse);
+      });
+    } catch (e) {
+      setState(() {
+        _messages.add(ChatMessage.bot(
+          '⚠️ Error: ${e.toString().replaceFirst('Exception: ', '')}',
+          isEmergency: true,
+        ));
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+      _scrollToBottom();
+    }
+  }
+
+  // Keep this version of _scrollToBottom
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  // Use this version of _showInfoDialog that uses ThemeProvider
+  void _showInfoDialog() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: themeProvider.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info, color: themeProvider.primaryColor),
+            const SizedBox(width: 8),
+            Text(
+              'About Ayurvedic First Aid', 
+              style: TextStyle(color: themeProvider.primaryColor),
+            ),
+          ],
+        ),
+        content: Text(
+          'This app provides traditional Ayurvedic remedies for common health issues. '
+          'Always consult a qualified healthcare professional for serious conditions.\n\n'
+          '⚠️ This is not a substitute for professional medical advice.',
+          style: TextStyle(color: themeProvider.textColor, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Got it', 
+              style: TextStyle(color: themeProvider.primaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -487,141 +587,4 @@ Widget _buildEmptyState(ThemeProvider themeProvider) {
         ),
       ),
     );
-  }
-
-  void _showInfoDialog() {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: themeProvider.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.info, color: themeProvider.primaryColor),
-            const SizedBox(width: 8),
-            Text(
-              'About Ayurvedic First Aid', 
-              style: TextStyle(color: themeProvider.primaryColor),
-            ),
-          ],
-        ),
-        content: Text(
-          'This app provides traditional Ayurvedic remedies for common health issues. '
-          'Always consult a qualified healthcare professional for serious conditions.\n\n'
-          '⚠️ This is not a substitute for professional medical advice.',
-          style: TextStyle(color: themeProvider.textColor, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Got it', 
-              style: TextStyle(color: themeProvider.primaryColor),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-              child: IconButton(
-                onPressed: _isLoading ? null : () => _sendMessage(_textController.text),
-                icon: Icon(
-                  _isLoading ? Icons.hourglass_empty : Icons.send,
-                  color: _backgroundColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
- Future<void> _sendMessage(String text) async {
-  if (text.trim().isEmpty || _isLoading) return;
-
-  final trimmedText = text.trim();
-  final userMessage = ChatMessage.user(trimmedText);
-  
-  setState(() {
-    _messages.add(userMessage);
-    _isLoading = true;
-    _textController.clear();
-  });
-
-  _scrollToBottom();
-
-  try {
-    // Get current language from LocaleProvider
-    final currentLanguage = _getCurrentLanguage();
-    
-    // Send message with current language from menu selection
-    final botResponse = await ChatService.sendMessage(trimmedText, currentLanguage);
-    
-    setState(() {
-      _messages.add(botResponse);
-    });
-  } catch (e) {
-    setState(() {
-      _messages.add(ChatMessage.bot(
-        '⚠️ Error: ${e.toString().replaceFirst('Exception: ', '')}',
-        isEmergency: true,
-      ));
-    });
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-    _scrollToBottom();
-  }
-}
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: _cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.info, color: _primaryColor),
-            const SizedBox(width: 8),
-            Text('About Ayurvedic First Aid', style: TextStyle(color: _primaryColor)),
-          ],
-        ),
-        content: Text(
-          'This app provides traditional Ayurvedic remedies for common health issues. '
-          'Always consult a qualified healthcare professional for serious conditions.\n\n'
-          '⚠️ This is not a substitute for professional medical advice.',
-          style: TextStyle(color: _textColor, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Got it', style: TextStyle(color: _primaryColor)),
-          ),
-        ],
-      ),
-    );
-  }
-}
+  }}
